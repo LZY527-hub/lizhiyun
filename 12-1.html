@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS变量 - 李知芸</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --bg-color: #f0f3f4;
+            --text-color: #2c3e50;
+            --font-size: 18px;
+            --spacing: 20px;
+            --border-radius: 12px;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: var(--font-size);
+            padding: var(--spacing);
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing);
+            font-size: 2em;
+        }
+
+        .name {
+            text-align: center;
+            font-size: 1.5em;
+            color: var(--secondary-color);
+            margin-bottom: calc(var(--spacing) * 2);
+            font-weight: bold;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: calc(var(--spacing) * 1.5);
+            margin-bottom: var(--spacing);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .demo-box {
+            display: flex;
+            gap: var(--spacing);
+            flex-wrap: wrap;
+            margin-top: var(--spacing);
+        }
+
+        .demo-item {
+            flex: 1;
+            min-width: 200px;
+            padding: var(--spacing);
+            border-radius: var(--border-radius);
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .demo-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .demo-item:nth-child(1) { background-color: var(--primary-color); }
+        .demo-item:nth-child(2) { background-color: var(--secondary-color); }
+        .demo-item:nth-child(3) { background-color: var(--text-color); }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: var(--spacing);
+            border-radius: var(--border-radius);
+            font-family: Consolas, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .code-block .comment { color: #95a5a6; }
+        .code-block .property { color: #3498db; }
+        .code-block .value { color: #2ecc71; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CSS 变量示例</h1>
+        <p class="name">李知芸</p>
+
+        <div class="card">
+            <h2>什么是 CSS 变量？</h2>
+            <p>CSS 变量（又称自定义属性）允许你定义可重复使用的值，通过 <code>var()</code> 函数引用。在 <code>:root</code> 中定义全局变量，整个页面都可以使用。</p>
+            <div class="code-block">
+<span class="comment">/* 定义变量 */</span>
+<span class="property">:root</span> {
+    <span class="property">--primary-color</span>: <span class="value">#3498db</span>;
+    <span class="property">--spacing</span>: <span class="value">20px</span>;
+}
+
+<span class="comment">/* 使用变量 */</span>
+<span class="property">.card</span> {
+    <span class="property">color</span>: <span class="value">var(--primary-color)</span>;
+    <span class="property">padding</span>: <span class="value">var(--spacing)</span>;
+}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>变量效果展示</h2>
+            <p>以下色块使用了 CSS 变量定义的颜色，悬停查看过渡效果：</p>
+            <div class="demo-box">
+                <div class="demo-item">主色调</div>
+                <div class="demo-item">辅助色</div>
+                <div class="demo-item">文字色</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>优势</h2>
+            <p>使用 CSS 变量可以轻松实现主题切换、统一设计风格，并减少重复代码。修改变量值即可全局更新样式。</p>
+        </div>
+    </div>
+</body>
+</html>
