@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS 长度单位</title>
+<style>
+    :root{
+        --yuan_bg:#0b0e16;
+        --yuan_card:#141926;
+        --yuan_ink:#eef1f8;
+        --yuan_muted:#8b94a9;
+        --yuan_c1:#6d7cff;
+        --yuan_c2:#5fd8c8;
+        --yuan_border:rgba(255,255,255,.09);
+        --yuan_root_size:16px;
+    }
+    html{font-size:var(--yuan_root_size);}
+    *{box-sizing:border-box;}
+    body{
+        margin:0;
+        padding:0;
+        background:linear-gradient(180deg,#0b0e16 0%,#0e1220 100%);
+        color:var(--yuan_ink);
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        line-height:1.7;
+        -webkit-font-smoothing:antialiased;
+    }
+    .yuan_wrap{
+        max-width:1000px;
+        margin:0 auto;
+        padding:72px 28px 88px;
+    }
+    .yuan_eyebrow{
+        display:inline-block;
+        font-size:12px;
+        letter-spacing:4px;
+        text-transform:uppercase;
+        color:var(--yuan_c2);
+        margin-bottom:16px;
+    }
+    .yuan_title{
+        margin:0 0 12px;
+        font-size:clamp(30px,5vw,50px);
+        font-weight:800;
+        line-height:1.15;
+        background:linear-gradient(94deg,#ffffff,#ccd3ff 60%,#9ff0e8);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .yuan_intro{
+        margin:0 0 56px;
+        max-width:640px;
+        color:var(--yuan_muted);
+        font-size:15px;
+    }
+    .yuan_section{margin-bottom:64px;}
+    .yuan_h2{
+        display:flex;
+        align-items:center;
+        gap:14px;
+        margin:0 0 26px;
+        font-size:22px;
+        font-weight:700;
+    }
+    .yuan_h2::before{
+        content:"";
+        width:6px;height:22px;border-radius:3px;
+        background:linear-gradient(180deg,var(--yuan_c1),var(--yuan_c2));
+    }
+    .yuan_note{
+        margin:-12px 0 26px;
+        color:var(--yuan_muted);
+        font-size:13.5px;
+    }
+
+    /* 单位卡片网格 */
+    .yuan_grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+        gap:16px;
+    }
+    .yuan_card{
+        background:var(--yuan_card);
+        border:1px solid var(--yuan_border);
+        border-radius:14px;
+        padding:18px 20px;
+        transition:transform .25s ease,border-color .25s ease;
+    }
+    .yuan_card:hover{
+        transform:translateY(-4px);
+        border-color:rgba(95,216,200,.5);
+    }
+    .yuan_unit{
+        display:inline-block;
+        font-family:ui-monospace,Consolas,monospace;
+        font-size:16px;
+        font-weight:700;
+        color:var(--yuan_c2);
+        margin-bottom:6px;
+    }
+    .yuan_unit_desc{
+        margin:0;
+        font-size:13px;
+        color:var(--yuan_muted);
+        line-height:1.75;
+    }
+    .yuan_unit_desc b{color:var(--yuan_ink);}
+
+    /* 英寸标尺 */
+    .yuan_ruler{
+        background:var(--yuan_card);
+        border:1px solid var(--yuan_border);
+        border-radius:14px;
+        padding:30px 26px;
+    }
+    .yuan_ruler_row{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        gap:14px;
+        margin-bottom:22px;
+    }
+    .yuan_ruler_row:last-child{margin-bottom:0;}
+    .yuan_ruler_label{
+        flex:0 0 60px;
+        font-family:ui-monospace,Consolas,monospace;
+        font-size:14px;
+        color:var(--yuan_c2);
+    }
+    .yuan_rule{
+        height:22px;
+        border-radius:5px;
+        background:linear-gradient(90deg,var(--yuan_c1),var(--yuan_c2));
+        opacity:.85;
+    }
+    .yuan_rule_in{width:1in;}
+    .yuan_rule_px{width:96px;}
+    .yuan_rule_cm{width:2.54cm;}
+    .yuan_rule_mm{width:25.4mm;}
+    .yuan_rule_pt{width:72pt;}
+    .yuan_rule_pc{width:6pc;}
+    .yuan_equal{
+        font-size:13px;
+        color:var(--yuan_muted);
+    }
+
+    /* 相对单位交互演示 */
+    .yuan_panel{
+        background:var(--yuan_card);
+        border:1px solid var(--yuan_border);
+        border-radius:16px;
+        padding:28px 26px 32px;
+    }
+    .yuan_slider_row{
+        display:flex;
+        align-items:center;
+        gap:16px;
+        margin-bottom:30px;
+        flex-wrap:wrap;
+    }
+    .yuan_slider_row label{font-size:14px;color:var(--yuan_muted);}
+    .yuan_slider{
+        flex:1;
+        min-width:200px;
+        accent-color:var(--yuan_c2);
+    }
+    .yuan_value{
+        font-family:ui-monospace,Consolas,monospace;
+        font-size:14px;
+        color:var(--yuan_c2);
+        min-width:56px;
+        text-align:right;
+    }
+    .yuan_demo{
+        display:flex;
+        flex-wrap:wrap;
+        gap:22px;
+    }
+    .yuan_demo_item{
+        flex:1;
+        min-width:180px;
+        background:rgba(255,255,255,.03);
+        border:1px solid var(--yuan_border);
+        border-radius:12px;
+        padding:18px;
+    }
+    .yuan_demo_item h4{
+        margin:0 0 14px;
+        font-size:13px;
+        letter-spacing:1px;
+        color:var(--yuan_muted);
+        font-weight:600;
+    }
+    .yuan_bar{
+        height:34px;
+        border-radius:6px;
+        background:linear-gradient(90deg,var(--yuan_c1),var(--yuan_c2));
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+        padding-right:10px;
+        font-size:12px;
+        color:#0b0e16;
+        font-weight:700;
+        white-space:nowrap;
+    }
+    .yuan_bar_px{width:80px;}
+    .yuan_bar_rem{width:5rem;}
+    .yuan_bar_em{width:4em;font-size:1em;}
+
+    /* 视口单位 */
+    .yuan_vw_demo{
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+    }
+    .yuan_vw_row{
+        display:flex;
+        align-items:center;
+        gap:12px;
+    }
+    .yuan_vw_tag{
+        flex:0 0 120px;
+        font-family:ui-monospace,Consolas,monospace;
+        font-size:13px;
+        color:var(--yuan_c2);
+    }
+    .yuan_vw_bar{
+        height:20px;
+        border-radius:5px;
+        background:linear-gradient(90deg,rgba(109,124,255,.9),rgba(95,216,200,.9));
+    }
+    .yuan_vw_10{width:10vw;}
+    .yuan_vw_25{width:25vw;}
+    .yuan_vw_50{width:50vw;}
+
+    /* em 嵌套演示 */
+    .yuan_nest{
+        font-size:20px;
+        background:rgba(255,255,255,.03);
+        border:1px dashed var(--yuan_border);
+        border-radius:12px;
+        padding:18px 20px;
+    }
+    .yuan_nest_1{font-size:1.5em;color:var(--yuan_c2);}
+    .yuan_nest_2{font-size:1.5em;color:#ffd36d;}
+
+    .yuan_back{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        margin-top:54px;
+        padding:12px 24px;
+        border-radius:999px;
+        border:1px solid var(--yuan_border);
+        background:rgba(255,255,255,.04);
+        color:var(--yuan_ink);
+        text-decoration:none;
+        font-size:14px;
+        transition:background .25s ease,border-color .25s ease,transform .25s ease;
+    }
+    .yuan_back:hover{
+        background:rgba(95,216,200,.12);
+        border-color:var(--yuan_c2);
+        transform:translateX(-4px);
+    }
+    .yuan_footer{
+        margin-top:34px;
+        font-size:12.5px;
+        color:var(--yuan_muted);
+        letter-spacing:1px;
+    }
+</style>
+</head>
+<body>
+<div class="yuan_wrap">
+    <span class="yuan_eyebrow">CSS · Length Units</span>
+    <h1 class="yuan_title">Web 前端的长度单位</h1>
+    <p class="yuan_intro">
+        CSS 长度由「数值 + 单位」组成（0 可省略单位）。单位分为两大类：
+        绝对单位固定不变，相对单位则随父元素、根元素或视口尺寸而缩放。
+    </p>
+
+    <section class="yuan_section">
+        <h2 class="yuan_h2">一、绝对单位</h2>
+        <p class="yuan_note">以物理尺寸或像素为基准，不随环境变化。屏幕上 1in 固定等于 96px。</p>
+        <div class="yuan_grid">
+            <div class="yuan_card">
+                <span class="yuan_unit">px</span>
+                <p class="yuan_unit_desc">像素，最常用的单位。<b>1in = 96px</b>。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">in</span>
+                <p class="yuan_unit_desc">英寸。<b>1in = 2.54cm = 96px</b>。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">cm</span>
+                <p class="yuan_unit_desc">厘米。<b>1cm ≈ 37.8px</b>。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">mm</span>
+                <p class="yuan_unit_desc">毫米。<b>1mm = 0.1cm ≈ 3.78px</b>。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">pt</span>
+                <p class="yuan_unit_desc">磅，印刷单位。<b>1pt = 1/72in ≈ 1.333px</b>。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">pc</span>
+                <p class="yuan_unit_desc">派卡。<b>1pc = 12pt = 16px</b>。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">Q</span>
+                <p class="yuan_unit_desc">1/4 毫米。<b>1Q = 1/40cm ≈ 0.945px</b>。</p>
+            </div>
+        </div>
+
+        <div class="yuan_ruler" style="margin-top:22px;">
+            <div class="yuan_ruler_row">
+                <span class="yuan_ruler_label">1in</span>
+                <div class="yuan_rule yuan_rule_in"></div>
+                <span class="yuan_equal">= 96px</span>
+            </div>
+            <div class="yuan_ruler_row">
+                <span class="yuan_ruler_label">2.54cm</span>
+                <div class="yuan_rule yuan_rule_cm"></div>
+                <span class="yuan_equal">= 25.4mm</span>
+            </div>
+            <div class="yuan_ruler_row">
+                <span class="yuan_ruler_label">72pt</span>
+                <div class="yuan_rule yuan_rule_pt"></div>
+                <span class="yuan_equal">= 6pc = 1in</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="yuan_section">
+        <h2 class="yuan_h2">二、相对单位</h2>
+        <p class="yuan_note">相对于参照物计算，是响应式布局的核心。</p>
+        <div class="yuan_grid">
+            <div class="yuan_card">
+                <span class="yuan_unit">em</span>
+                <p class="yuan_unit_desc">相对<b>当前元素（或父元素）</b>的 font-size。会逐层叠加。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">rem</span>
+                <p class="yuan_unit_desc">相对<b>根元素 html</b> 的 font-size，始终以根字号为基准。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">%</span>
+                <p class="yuan_unit_desc">相对<b>父元素</b>同属性数值的百分比。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">vw / vh</span>
+                <p class="yuan_unit_desc">视口宽度 / 高度的 1%。<b>100vw</b> 即整个视口宽。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">vmin / vmax</span>
+                <p class="yuan_unit_desc">视口宽高中<b>较小 / 较大</b>者的 1%。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">ex / ch</span>
+                <p class="yuan_unit_desc">小写 x 的高度 / 字符 <b>“0”</b> 的宽度。</p>
+            </div>
+            <div class="yuan_card">
+                <span class="yuan_unit">lh / rlh</span>
+                <p class="yuan_unit_desc">相对元素 / 根元素的行高。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="yuan_section">
+        <h2 class="yuan_h2">三、px / rem / em 对比</h2>
+        <p class="yuan_note">拖动滑块修改根元素 font-size，观察三种单位的缩放差异：px 固定不变，rem 与 em 随之变化。</p>
+        <div class="yuan_panel">
+            <div class="yuan_slider_row">
+                <label for="yuan_root">根字号 html：</label>
+                <input type="range" min="10" max="28" value="16" step="1" class="yuan_slider" id="yuan_root">
+                <span class="yuan_value" id="yuan_root_value">16px</span>
+            </div>
+            <div class="yuan_demo">
+                <div class="yuan_demo_item">
+                    <h4>80px（固定）</h4>
+                    <div class="yuan_bar yuan_bar_px">80px</div>
+                </div>
+                <div class="yuan_demo_item">
+                    <h4>5rem（随根字号）</h4>
+                    <div class="yuan_bar yuan_bar_rem">5rem</div>
+                </div>
+                <div class="yuan_demo_item">
+                    <h4>4em（随自身字号）</h4>
+                    <div class="yuan_bar yuan_bar_em">4em</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="yuan_section">
+        <h2 class="yuan_h2">四、em 的逐层叠加</h2>
+        <p class="yuan_note">父级 font-size 为 20px，子元素 1.5em 逐层相乘，字号会不断放大。</p>
+        <div class="yuan_nest">
+            <span>父级：20px</span>
+            <div class="yuan_nest_1">
+                第 1 层 1.5em = 30px
+                <div class="yuan_nest_2">第 2 层 1.5em = 45px</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="yuan_section">
+        <h2 class="yuan_h2">五、视口单位</h2>
+        <p class="yuan_note">条形宽度直接使用 vw，会随浏览器窗口宽度实时变化。</p>
+        <div class="yuan_panel">
+            <div class="yuan_vw_demo">
+                <div class="yuan_vw_row">
+                    <span class="yuan_vw_tag">10vw</span>
+                    <div class="yuan_vw_bar yuan_vw_10"></div>
+                </div>
+                <div class="yuan_vw_row">
+                    <span class="yuan_vw_tag">25vw</span>
+                    <div class="yuan_vw_bar yuan_vw_25"></div>
+                </div>
+                <div class="yuan_vw_row">
+                    <span class="yuan_vw_tag">50vw</span>
+                    <div class="yuan_vw_bar yuan_vw_50"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <a class="yuan_back" href="index.html">← 返回首页</a>
+    <p class="yuan_footer">© 李知芸 ·《高级网页设计》课堂实践 · 原生代码实现（无 CDN）</p>
+</div>
+
+<script>
+(function(){
+    "use strict";
+    var yuan_slider = document.getElementById("yuan_root");
+    var yuan_output = document.getElementById("yuan_root_value");
+    function yuan_update(){
+        var yuan_size = yuan_slider.value;
+        document.documentElement.style.fontSize = yuan_size + "px";
+        yuan_output.textContent = yuan_size + "px";
+    }
+    yuan_slider.addEventListener("input", yuan_update);
+    yuan_update();
+})();
+</script>
+</body>
+</html>

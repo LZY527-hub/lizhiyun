@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS3 3D 动画</title>
+<style>
+    :root{
+        --li_bg:#0b0e16;
+        --li_card:#141926;
+        --li_ink:#eef1f8;
+        --li_muted:#8b94a9;
+        --li_c1:#6d7cff;
+        --li_c2:#5fd8c8;
+        --li_c3:#ffd36d;
+        --li_border:rgba(255,255,255,.09);
+    }
+    *{box-sizing:border-box;}
+    body{
+        margin:0;padding:0;
+        background:linear-gradient(180deg,#0b0e16 0%,#0e1220 100%);
+        color:var(--li_ink);
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        line-height:1.7;-webkit-font-smoothing:antialiased;
+    }
+    .li_wrap{max-width:1080px;margin:0 auto;padding:72px 28px 88px;}
+    .li_eyebrow{
+        display:inline-block;font-size:12px;letter-spacing:4px;
+        text-transform:uppercase;color:var(--li_c2);margin-bottom:16px;
+    }
+    .li_title{
+        margin:0 0 12px;font-size:clamp(30px,5vw,50px);font-weight:800;line-height:1.15;
+        background:linear-gradient(94deg,#ffffff,#ccd3ff 60%,#9ff0e8);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .li_intro{margin:0 0 56px;max-width:660px;color:var(--li_muted);font-size:15px;}
+    .li_grid{
+        display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+        gap:22px;margin-bottom:22px;
+    }
+    .li_stage{
+        background:var(--li_card);border:1px solid var(--li_border);
+        border-radius:18px;padding:30px 24px 28px;overflow:hidden;
+    }
+    .li_stage h3{
+        margin:0 0 6px;font-size:18px;font-weight:700;
+    }
+    .li_stage p{margin:0 0 22px;font-size:13px;color:var(--li_muted);}
+    .li_view{
+        height:280px;display:flex;align-items:center;justify-content:center;
+        perspective:900px;
+    }
+
+    /* ===== 1. 翻转卡片 ===== */
+    .li_flip{
+        position:relative;width:210px;height:260px;
+        transform-style:preserve-3d;transition:transform .9s cubic-bezier(.4,.1,.2,1);
+    }
+    .li_flip:hover{transform:rotateY(180deg);}
+    .li_face{
+        position:absolute;inset:0;border-radius:16px;
+        backface-visibility:hidden;-webkit-backface-visibility:hidden;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+        border:1px solid var(--li_border);
+    }
+    .li_face_front{
+        background:linear-gradient(150deg,#1b2233,#141a28);
+    }
+    .li_face_front .li_emoji{font-size:56px;}
+    .li_face_front span{font-size:16px;letter-spacing:2px;color:var(--li_ink);}
+    .li_face_back{
+        background:linear-gradient(150deg,var(--li_c1),var(--li_c2));
+        transform:rotateY(180deg);color:#0b0e16;
+    }
+    .li_face_back b{font-size:26px;}
+    .li_face_back span{font-size:13px;font-weight:600;}
+
+    /* ===== 2. 旋转立方体 ===== */
+    .li_cube_box{width:140px;height:140px;position:relative;transform-style:preserve-3d;animation:li_spin 9s linear infinite;}
+    @keyframes li_spin{
+        from{transform:rotateX(-20deg) rotateY(0deg);}
+        to{transform:rotateX(-20deg) rotateY(360deg);}
+    }
+    .li_face_cube{
+        position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        font-size:34px;font-weight:800;color:#0b0e16;
+        background:linear-gradient(135deg,rgba(109,124,255,.92),rgba(95,216,200,.92));
+        border:1px solid rgba(255,255,255,.25);border-radius:8px;
+    }
+    .li_cube_1{transform:translateZ(70px);}
+    .li_cube_2{transform:rotateY(90deg) translateZ(70px);}
+    .li_cube_3{transform:rotateY(180deg) translateZ(70px);}
+    .li_cube_4{transform:rotateY(270deg) translateZ(70px);}
+    .li_cube_5{transform:rotateX(90deg) translateZ(70px);}
+    .li_cube_6{transform:rotateX(-90deg) translateZ(70px);}
+
+    /* ===== 3. 行星环 ===== */
+    .li_ring{width:220px;height:220px;position:relative;transform-style:preserve-3d;animation:li_ring 14s linear infinite;}
+    @keyframes li_ring{
+        from{transform:rotateX(70deg) rotateZ(0deg);}
+        to{transform:rotateX(70deg) rotateZ(360deg);}
+    }
+    .li_ring_core{
+        position:absolute;inset:70px;border-radius:50%;
+        background:radial-gradient(circle at 35% 35%,var(--li_c3),#e08b3a);
+        box-shadow:0 0 40px rgba(255,211,109,.5);
+    }
+    .li_ring_band{
+        position:absolute;inset:0;border-radius:50%;
+        border:2px solid rgba(95,216,200,.35);
+        transform:rotateX(90deg);
+    }
+    .li_ring_band.b1{inset:18px;border-color:rgba(109,124,255,.4);}
+    .li_ring_band.b2{inset:38px;border-color:rgba(95,216,200,.3);}
+    .li_satellite{
+        position:absolute;top:-9px;left:50%;width:18px;height:18px;margin-left:-9px;
+        border-radius:50%;background:var(--li_c2);
+        box-shadow:0 0 16px rgba(95,216,200,.9);
+    }
+
+    /* ===== 4. 3D 旋转木马 ===== */
+    .li_carousel{width:120px;height:120px;position:relative;transform-style:preserve-3d;animation:li_carousel 12s linear infinite;}
+    @keyframes li_carousel{
+        from{transform:rotateY(0deg);}
+        to{transform:rotateY(360deg);}
+    }
+    .li_panel{
+        position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+        font-size:26px;font-weight:800;border-radius:12px;
+        background:linear-gradient(150deg,#1b2233,#141a28);
+        border:1px solid var(--li_border);color:var(--li_c2);
+    }
+    .li_panel:nth-child(1){transform:rotateY(0deg) translateZ(180px);}
+    .li_panel:nth-child(2){transform:rotateY(60deg) translateZ(180px);}
+    .li_panel:nth-child(3){transform:rotateY(120deg) translateZ(180px);}
+    .li_panel:nth-child(4){transform:rotateY(180deg) translateZ(180px);}
+    .li_panel:nth-child(5){transform:rotateY(240deg) translateZ(180px);}
+    .li_panel:nth-child(6){transform:rotateY(300deg) translateZ(180px);}
+
+    /* ===== 5. 3D 倾斜卡片（JS 驱动） ===== */
+    .li_tilt{
+        width:230px;height:150px;border-radius:16px;
+        background:linear-gradient(150deg,#1b2233,#141a28);
+        border:1px solid var(--li_border);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+        transform-style:preserve-3d;transition:transform .12s ease-out;
+        box-shadow:0 20px 40px -20px rgba(0,0,0,.7);
+    }
+    .li_tilt b{font-size:22px;transform:translateZ(40px);}
+    .li_tilt span{font-size:13px;color:var(--li_muted);transform:translateZ(30px);}
+    .li_hint{font-size:12px;color:var(--li_muted);margin-top:14px;}
+
+    /* ===== 6. 3D 悬浮按钮 ===== */
+    .li_btn3d{
+        position:relative;padding:14px 40px;border:none;border-radius:12px;cursor:pointer;
+        font-size:16px;font-weight:700;color:#0b0e16;
+        background:linear-gradient(135deg,var(--li_c1),var(--li_c2));
+        transform:translateZ(0);transition:transform .2s ease,box-shadow .2s ease;
+        box-shadow:0 8px 0 #2c3a6e,0 14px 24px rgba(0,0,0,.5);
+    }
+    .li_btn3d:hover{transform:translateZ(24px) rotateX(12deg);}
+    .li_btn3d:active{transform:translateY(6px);box-shadow:0 2px 0 #2c3a6e,0 6px 12px rgba(0,0,0,.5);}
+
+    .li_back{
+        display:inline-flex;align-items:center;gap:8px;margin-top:54px;
+        padding:12px 24px;border-radius:999px;border:1px solid var(--li_border);
+        background:rgba(255,255,255,.04);color:var(--li_ink);text-decoration:none;font-size:14px;
+        transition:background .25s ease,border-color .25s ease,transform .25s ease;
+    }
+    .li_back:hover{background:rgba(95,216,200,.12);border-color:var(--li_c2);transform:translateX(-4px);}
+    .li_footer{margin-top:34px;font-size:12.5px;color:var(--li_muted);letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="li_wrap">
+    <span class="li_eyebrow">CSS3 · 3D Transforms</span>
+    <h1 class="li_title">CSS3 3D 动画</h1>
+    <p class="li_intro">
+        借助 <code>perspective</code>、<code>transform-style: preserve-3d</code> 与
+        <code>rotateX / rotateY / rotateZ / translateZ</code>，可以在纯 CSS 中构建三维空间与动画。
+    </p>
+
+    <div class="li_grid">
+        <div class="li_stage">
+            <h3>1. 翻转卡片</h3>
+            <p>hover 触发 rotateY(180deg)，背面用 backface-visibility 隐藏。</p>
+            <div class="li_view">
+                <div class="li_flip">
+                    <div class="li_face li_face_front">
+                        <div class="li_emoji">🃏</div>
+                        <span>正面 · 悬停翻转</span>
+                    </div>
+                    <div class="li_face li_face_back">
+                        <b>李知芸</b>
+                        <span>学号 527</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="li_stage">
+            <h3>2. 旋转立方体</h3>
+            <p>6 个面用 translateZ 拼成立方体，整体绕 Y 轴旋转。</p>
+            <div class="li_view">
+                <div class="li_cube_box">
+                    <div class="li_face_cube li_cube_1">前</div>
+                    <div class="li_face_cube li_cube_2">右</div>
+                    <div class="li_face_cube li_cube_3">后</div>
+                    <div class="li_face_cube li_cube_4">左</div>
+                    <div class="li_face_cube li_cube_5">上</div>
+                    <div class="li_face_cube li_cube_6">下</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="li_stage">
+            <h3>3. 行星环</h3>
+            <p>圆环 rotateX(90deg) 后随容器绕 Z 轴公转。</p>
+            <div class="li_view">
+                <div class="li_ring">
+                    <div class="li_ring_core"></div>
+                    <div class="li_ring_band b1"></div>
+                    <div class="li_ring_band b2"></div>
+                    <div class="li_satellite"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="li_stage">
+            <h3>4. 旋转木马</h3>
+            <p>6 个面板等角度分布在圆周上，容器连续旋转。</p>
+            <div class="li_view">
+                <div class="li_carousel">
+                    <div class="li_panel">1</div>
+                    <div class="li_panel">2</div>
+                    <div class="li_panel">3</div>
+                    <div class="li_panel">4</div>
+                    <div class="li_panel">5</div>
+                    <div class="li_panel">6</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="li_stage">
+            <h3>5. 鼠标倾斜</h3>
+            <p>JS 监听鼠标，动态计算 rotateX / rotateY。</p>
+            <div class="li_view" style="flex-direction:column;">
+                <div class="li_tilt" id="li_tilt_card">
+                    <b>3D 倾斜</b>
+                    <span>移动鼠标试试</span>
+                </div>
+                <div class="li_hint">perspective + rotateX / rotateY</div>
+            </div>
+        </div>
+
+        <div class="li_stage">
+            <h3>6. 悬浮按钮</h3>
+            <p>立体投影 + translateZ 抬升，按下时下沉。</p>
+            <div class="li_view">
+                <button class="li_btn3d" type="button">按 我</button>
+            </div>
+        </div>
+    </div>
+
+    <a class="li_back" href="index.html">← 返回首页</a>
+    <p class="li_footer">© 李知芸 ·《高级网页设计》课堂实践 · 原生代码实现（无 CDN）</p>
+</div>
+
+<script>
+(function(){
+    "use strict";
+    var li_card = document.getElementById("li_tilt_card");
+    var li_view = li_card.parentElement;
+    var li_max = 18;
+
+    function li_onMove(e){
+        var li_rect = li_view.getBoundingClientRect();
+        var li_x = (e.clientX - li_rect.left) / li_rect.width - .5;
+        var li_y = (e.clientY - li_rect.top) / li_rect.height - .5;
+        li_card.style.transform =
+            "rotateX(" + (-li_y * li_max) + "deg) rotateY(" + (li_x * li_max) + "deg)";
+    }
+    function li_onLeave(){
+        li_card.style.transform = "rotateX(0deg) rotateY(0deg)";
+    }
+    li_view.addEventListener("mousemove", li_onMove);
+    li_view.addEventListener("mouseleave", li_onLeave);
+})();
+</script>
+</body>
+</html>

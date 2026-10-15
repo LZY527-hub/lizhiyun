@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>李知芸的《高级网页设计》课堂实践</title>
+<style>
+    :root{
+        --bg:#05060b;
+        --ink:#eef1f8;
+        --muted:#8b94a9;
+        --c1:#6d7cff;
+        --c2:#5fd8c8;
+        --border:rgba(255,255,255,.08);
+        --glass:rgba(255,255,255,.045);
+        --glass-hover:rgba(255,255,255,.075);
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;}
+    body{
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        color:var(--ink);
+        background:linear-gradient(180deg,#05060b 0%,#080a12 100%);
+        min-height:100vh;
+        line-height:1.6;
+        -webkit-font-smoothing:antialiased;
+        text-rendering:optimizeLegibility;
+        overflow-x:hidden;
+    }
+    /* 背景微光 */
+    .glow{position:fixed;border-radius:50%;filter:blur(95px);pointer-events:none;z-index:0;}
+    .glow-1{width:560px;height:560px;top:-140px;left:-100px;
+        background:radial-gradient(circle,rgba(109,124,255,.22),transparent 64%);
+        animation:drift1 26s ease-in-out infinite;}
+    .glow-2{width:480px;height:480px;top:8%;right:-140px;
+        background:radial-gradient(circle,rgba(95,216,200,.16),transparent 64%);
+        animation:drift2 32s ease-in-out infinite;}
+    .glow-3{width:600px;height:600px;bottom:-180px;left:28%;
+        background:radial-gradient(circle,rgba(138,110,255,.15),transparent 64%);
+        animation:drift3 38s ease-in-out infinite;}
+    @keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(130px,90px) scale(1.1);}}
+    @keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-110px,130px) scale(1.08);}}
+    @keyframes drift3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(90px,-110px) scale(1.12);}}
+    /* 背景水印字 */
+    .watermark{
+        position:fixed;
+        right:-3%;
+        top:4%;
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:min(40vw,500px);
+        font-weight:800;
+        line-height:1;
+        color:rgba(255,255,255,.022);
+        letter-spacing:.02em;
+        pointer-events:none;
+        z-index:0;
+        user-select:none;
+    }
+    /* 粒子 */
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+    .wrap{
+        position:relative;z-index:1;
+        max-width:1140px;margin:0 auto;
+        padding:88px 32px 80px;
+    }
+
+    /* ===== Hero ===== */
+    .hero{
+        display:grid;
+        grid-template-columns:1.6fr 1fr;
+        gap:48px;
+        align-items:end;
+        margin-bottom:84px;
+    }
+    .eyebrow{
+        display:inline-flex;align-items:center;gap:12px;
+        font-size:11px;letter-spacing:4px;text-transform:uppercase;
+        color:var(--muted);margin-bottom:28px;
+    }
+    .eyebrow::before{content:"";width:40px;height:1px;background:linear-gradient(90deg,var(--c1),transparent);}
+    .hero h1{
+        margin:0;
+        font-size:clamp(42px,7vw,84px);
+        line-height:1.06;
+        font-weight:800;
+        letter-spacing:.5px;
+    }
+    .hero h1 span{display:block;}
+    .hero h1 .solid{
+        background:linear-gradient(94deg,#ffffff 0%,#ccd3ff 55%,#9ff0e8 100%);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .hero h1 .outline{
+        color:rgba(255,255,255,.12);
+        -webkit-text-stroke:1.2px rgba(255,255,255,.55);
+        -webkit-text-fill-color:transparent;
+    }
+    .hero-side{
+        padding-left:28px;
+        border-left:1px solid var(--border);
+    }
+    .hero-side .meta{
+        margin:0 0 22px;
+        font-size:14px;
+        letter-spacing:2px;
+        color:var(--muted);
+        line-height:2.1;
+    }
+    .hero-side .meta b{color:var(--ink);font-weight:600;}
+    .hero-side .blurb{
+        margin:0;
+        font-size:13px;
+        color:var(--muted);
+        line-height:1.9;
+    }
+
+    /* ===== 行式导航列表 ===== */
+    .list{
+        border-top:1px solid var(--border);
+    }
+    .item{
+        display:grid;
+        grid-template-columns:64px 1fr auto 44px;
+        align-items:center;
+        gap:24px;
+        padding:30px 14px;
+        border-bottom:1px solid var(--border);
+        text-decoration:none;
+        color:inherit;
+        position:relative;
+        transition:background .3s ease,padding-left .3s ease;
+    }
+    .item::after{
+        content:"";
+        position:absolute;left:0;bottom:-1px;
+        width:0;height:1px;
+        background:linear-gradient(90deg,var(--c1),var(--c2));
+        transition:width .4s ease;
+    }
+    .item:hover{background:var(--glass-hover);padding-left:28px;}
+    .item:hover::after{width:100%;}
+    .idx{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:13px;letter-spacing:2px;
+        background:linear-gradient(90deg,var(--c1),var(--c2));
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .ttl{
+        font-size:26px;font-weight:600;letter-spacing:.5px;
+        transition:color .3s ease,transform .3s ease;
+    }
+    .item:hover .ttl{color:var(--c2);transform:translateX(4px);}
+    .desc{font-size:13.5px;color:var(--muted);text-align:right;}
+    .go{
+        font-size:20px;color:var(--c2);
+        opacity:0;transform:translateX(-8px);
+        transition:opacity .3s ease,transform .3s ease;
+    }
+    .item:hover .go{opacity:1;transform:translateX(0);}
+
+    /* ===== 信息卡片 ===== */
+    .prompt{
+        position:relative;
+        margin-top:72px;
+        padding:38px 44px 36px 48px;
+        border-radius:20px;
+        background:var(--glass);
+        border:1px solid var(--border);
+        backdrop-filter:blur(16px) saturate(140%);
+        -webkit-backdrop-filter:blur(16px) saturate(140%);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 18px 40px -24px rgba(0,0,0,.7);
+        overflow:hidden;
+    }
+    .prompt::before{
+        content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+        background:linear-gradient(180deg,var(--c1),var(--c2));opacity:.8;
+    }
+    .prompt .quote{
+        font-size:52px;line-height:1;height:32px;
+        font-family:Georgia,"Times New Roman",serif;
+        background:linear-gradient(90deg,var(--c1),var(--c2));
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+        margin-bottom:14px;
+    }
+    .prompt h3{
+        margin:0 0 12px;font-size:12px;font-weight:600;
+        letter-spacing:3px;text-transform:uppercase;color:var(--c2);
+    }
+    .prompt p{margin:0;font-size:14.5px;line-height:2;color:#c4ccda;}
+
+    footer{margin-top:58px;text-align:center;color:var(--muted);font-size:12.5px;letter-spacing:1px;}
+
+    @media (max-width:860px){
+        .hero{grid-template-columns:1fr;gap:32px;}
+        .hero-side{border-left:0;padding-left:0;}
+        .desc{display:none;}
+        .item{grid-template-columns:52px 1fr 40px;}
+    }
+    @media (max-width:520px){
+        .wrap{padding:60px 20px 56px;}
+        .ttl{font-size:21px;}
+    }
+</style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+    <div class="watermark">527</div>
+
+    <div class="wrap">
+        <header class="hero">
+            <div class="hero-left">
+                <span class="eyebrow">Portfolio · Advanced Web Design</span>
+                <h1>
+                    <span class="solid">李知芸的</span>
+                    <span class="outline">《高级网页设计》</span>
+                    <span class="solid">课堂实践</span>
+                </h1>
+            </div>
+            <div class="hero-side">
+                <p class="meta">学号 <b>527</b><br>姓名 <b>李知芸</b><br>班级 <b>计算机24005</b></p>
+                <p class="blurb">十二项课堂实践成果，涵盖 HTML 基础、超链接、表单、CSS 选择器、盒模型、图文排版、长度单位与 3D 动画。</p>
+            </div>
+        </header>
+
+        <nav class="list" aria-label="课堂实践页面目录">
+            <a class="item" href="1.html">
+                <span class="idx">01</span>
+                <span class="ttl">个人主页</span>
+                <span class="desc">页面基础结构实践</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="2-1.html">
+                <span class="idx">02</span>
+                <span class="ttl">HTML 元素</span>
+                <span class="desc">开始标签 + 内容 + 结束标记</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="2-2.html">
+                <span class="idx">03</span>
+                <span class="ttl">超链接</span>
+                <span class="desc">外部、本地超链接与图片</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="3-1 form.html">
+                <span class="idx">04</span>
+                <span class="ttl">表单 form</span>
+                <span class="desc">HTML 表单元素基本使用</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="3-2 css.html">
+                <span class="idx">05</span>
+                <span class="ttl">层叠样式表 CSS</span>
+                <span class="desc">CSS 基础与样式入门</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="4-1 css.html">
+                <span class="idx">06</span>
+                <span class="ttl">CSS 选择器</span>
+                <span class="desc">群组选择器和后代选择器</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="5-1 层叠与继承.html">
+                <span class="idx">07</span>
+                <span class="ttl">层叠与继承</span>
+                <span class="desc">样式层叠、优先级与继承</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="5-2 盒模型.html">
+                <span class="idx">08</span>
+                <span class="ttl">盒模型</span>
+                <span class="desc">盒模型、边框与内外边距</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="7-1 上图下文.html">
+                <span class="idx">09</span>
+                <span class="ttl">图文排版 · 上图下文</span>
+                <span class="desc">图片在上、文字在下的排版</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="7-2 左图右文.html">
+                <span class="idx">10</span>
+                <span class="ttl">图文排版 · 左图右文</span>
+                <span class="desc">图片在左、文字在右的排版</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="11-1.html">
+                <span class="idx">11</span>
+                <span class="ttl">CSS 长度单位</span>
+                <span class="desc">绝对单位与相对单位演示</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="11-3.html">
+                <span class="idx">12</span>
+                <span class="ttl">CSS3 3D 动画</span>
+                <span class="desc">3D 变换与动画演示</span>
+                <span class="go">→</span>
+            </a>
+        </nav>
+
+        <section class="prompt">
+            <div class="quote">“</div>
+            <h3>任务提示词</h3>
+            <p>创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为李知芸的《高级网页设计》课堂实践，美化页面，页面中包括本提示词。</p>
+        </section>
+
+        <footer>
+            © 李知芸 ·《高级网页设计》课堂实践 · 原生代码实现（无 CDN）
+        </footer>
+    </div>
+
+    <script>
+    (function(){
+        "use strict";
+        var canvas = document.getElementById("particles");
+        var ctx = canvas.getContext("2d");
+        var DPR = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, parts = [];
+
+        function resize(){
+            W = canvas.width = Math.floor(innerWidth * DPR);
+            H = canvas.height = Math.floor(innerHeight * DPR);
+            canvas.style.width = innerWidth + "px";
+            canvas.style.height = innerHeight + "px";
+            seed();
+        }
+        function seed(){
+            var n = Math.min(90, Math.floor((innerWidth * innerHeight) / 24000));
+            parts = [];
+            for(var i = 0; i < n; i++){
+                parts.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - .5) * .12 * DPR,
+                    vy: (Math.random() - .5) * .12 * DPR,
+                    r: (Math.random() * 1.3 + .4) * DPR,
+                    o: Math.random() * .30 + .06
+                });
+            }
+        }
+
+        var mx = 0, my = 0, tx = 0, ty = 0;
+        window.addEventListener("mousemove", function(e){
+            tx = e.clientX / innerWidth - .5;
+            ty = e.clientY / innerHeight - .5;
+        });
+
+        function frame(){
+            mx += (tx - mx) * .04;
+            my += (ty - my) * .04;
+            ctx.clearRect(0, 0, W, H);
+            var ox = -mx * 46 * DPR, oy = -my * 46 * DPR;
+            for(var i = 0; i < parts.length; i++){
+                var p = parts[i];
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < -5) p.x = W + 5; else if(p.x > W + 5) p.x = -5;
+                if(p.y < -5) p.y = H + 5; else if(p.y > H + 5) p.y = -5;
+                ctx.beginPath();
+                ctx.arc(p.x + ox, p.y + oy, p.r, 0, 6.2832);
+                ctx.fillStyle = "rgba(168,186,255," + p.o.toFixed(3) + ")";
+                ctx.fill();
+            }
+            requestAnimationFrame(frame);
+        }
+
+        resize();
+        window.addEventListener("resize", resize);
+        frame();
+    })();
+    </script>
+</body>
+</html>

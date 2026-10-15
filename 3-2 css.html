@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>527 李知芸</title>
+    <style>
+        h3{
+            color: red;
+        }
+        p{
+            color: blue;
+        }
+        #box{
+            width: 500px;
+            height: 500px;
+            background-color: #ccc;
+        }
+        .n1{
+            color: #7a9;
+        }
+        /* 扩展1：h2 黑底白字 */
+        h2{
+            background-color: black;
+            color: white;
+        }
+        /* 扩展2：名字每个字不同颜色，同一行 */
+        .n2{
+            color: orange;
+        }
+        .n3{
+            color: purple;
+        }
+        .n1, .n2, .n3{
+            font-size: 24px;
+        }
+        /* 扩展3：选择器三个字为白色 */
+        .white{
+            color: white;
+        }
+        /* 扩展4：新盒子显示学号 */
+        .box2{
+            width: 100px;
+            height: 100px;
+            background-color: yellow;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>层叠样式表CSS</h2>
+    <div id="box">
+        <h3>CSS<span class="white">选择器</span></h3>
+        <p><span class="n1">李</span><span class="n2">知</span><span class="n3">芸</span></p>
+        <p>CSS属性</p>
+    </div>
+
+    <!-- 扩展4：新盒子，文字为学号 -->
+    <div class="box2">527</div>
+
+</body>
+</html>
