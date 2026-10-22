@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucide SVG 图标</title>
+    <script src="cdn/lucide.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 30px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .card svg {
+            width: 32px;
+            height: 32px;
+            color: #1e88e5;
+        }
+        .card p {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+        .section-title {
+            margin-top: 40px;
+            padding: 10px 16px;
+            background: #1e88e5;
+            color: #fff;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lucide SVG 图标示例</h1>
+
+    <div class="section-title">常用图标</div>
+    <div class="grid">
+        <div class="card"><i data-lucide="home"></i><p>home</p></div>
+        <div class="card"><i data-lucide="user"></i><p>user</p></div>
+        <div class="card"><i data-lucide="heart"></i><p>heart</p></div>
+        <div class="card"><i data-lucide="star"></i><p>star</p></div>
+        <div class="card"><i data-lucide="settings"></i><p>settings</p></div>
+        <div class="card"><i data-lucide="search"></i><p>search</p></div>
+        <div class="card"><i data-lucide="mail"></i><p>mail</p></div>
+        <div class="card"><i data-lucide="camera"></i><p>camera</p></div>
+        <div class="card"><i data-lucide="music"></i><p>music</p></div>
+        <div class="card"><i data-lucide="car"></i><p>car</p></div>
+        <div class="card"><i data-lucide="plane"></i><p>plane</p></div>
+        <div class="card"><i data-lucide="shopping-cart"></i><p>shopping-cart</p></div>
+    </div>
+
+    <div class="section-title">箭头与方向</div>
+    <div class="grid">    
+        <div class="card"><i data-lucide="arrow-up"></i><p>arrow-up</p></div>
+        <div class="card"><i data-lucide="arrow-down"></i><p>arrow-down</p></div>
+        <div class="card"><i data-lucide="arrow-left"></i><p>arrow-left</p></div>
+        <div class="card"><i data-lucide="arrow-right"></i><p>arrow-right</p></div>
+        <div class="card"><i data-lucide="chevron-up"></i><p>chevron-up</p></div>
+        <div class="card"><i data-lucide="chevron-down"></i><p>chevron-down</p></div>
+        <div class="card"><i data-lucide="chevron-left"></i><p>chevron-left</p></div>
+        <div class="card"><i data-lucide="chevron-right"></i><p>chevron-right</p></div>
+    </div>
+
+    <div class="section-title">界面操作</div>
+    <div class="grid">
+        <div class="card"><i data-lucide="edit"></i><p>edit</p></div>
+        <div class="card"><i data-lucide="trash-2"></i><p>trash-2</p></div>
+        <div class="card"><i data-lucide="plus"></i><p>plus</p></div>
+        <div class="card"><i data-lucide="minus"></i><p>minus</p></div>
+        <div class="card"><i data-lucide="x"></i><p>x</p></div>
+        <div class="card"><i data-lucide="check"></i><p>check</p></div>
+        <div class="card"><i data-lucide="upload"></i><p>upload</p></div>
+        <div class="card"><i data-lucide="download"></i><p>download</p></div>
+        <div class="card"><i data-lucide="lock"></i><p>lock</p></div>
+        <div class="card"><i data-lucide="unlock"></i><p>unlock</p></div>
+        <div class="card"><i data-lucide="eye"></i><p>eye</p></div>
+        <div class="card"><i data-lucide="eye-off"></i><p>eye-off</p></div>
+    </div>
+
+    <div class="section-title">尺寸与颜色（SVG 属性控制）</div>
+    <div class="grid">
+        <div class="card"><i data-lucide="star" width="16" height="16"></i><p>16px</p></div>
+        <div class="card"><i data-lucide="star" width="24" height="24"></i><p>24px</p></div>
+        <div class="card"><i data-lucide="star" width="48" height="48"></i><p>48px</p></div>
+        <div class="card"><i data-lucide="star" width="64" height="64" color="#e91e63"></i><p>64px</p></div>
+        <div class="card"><i data-lucide="heart" width="48" height="48" color="#e91e63" fill="currentColor"></i><p>填充色</p></div>
+        <div class="card"><i data-lucide="loader" width="48" height="48" class="spin"></i><p>旋转动画</p></div>
+    </div>
+
+    <style>
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
