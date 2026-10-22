@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript六种基础数据类型</title>
+    <style>
+        .lzy_body {
+            font-family: "Microsoft YaHei", sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .lzy_grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .lzy_card {
+            width: 260px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .lzy_card h3 {
+            margin: 0 0 8px;
+            color: #2c6ecb;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 6px;
+        }
+        .lzy_card p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+        .lzy_value {
+            color: #c7254e;
+            font-family: Consolas, monospace;
+            word-break: break-all;
+        }
+        .lzy_typeof {
+            color: #1a7f37;
+            font-family: Consolas, monospace;
+        }
+        .lzy_desc {
+            color: #666;
+        }
+    </style>
+</head>
+<body class="lzy_body">
+    <!-- 姓名：李知芸  日期：2026-10-22  功能名称：JavaScript六种基础数据类型演示 -->
+    <h2>李知芸：JavaScript 六种基础数据类型</h2>
+    <p>使用 typeof 演示六种基础数据类型，结果同时输出到页面和控制台（Symbol 为 ES6 新增）。</p>
+    <div class="lzy_grid" id="lzy_grid"></div>
+
+    <script>
+        // 1. String 字符串类型
+        var lzy_str = "李知芸，你好";
+        // 2. Number 数字类型
+        var lzy_num = 2026;
+        // 3. Boolean 布尔类型
+        var lzy_bool = true;
+        // 4. Undefined 未定义类型
+        var lzy_und;
+        // 5. Null 空类型
+        var lzy_nul = null;
+        // 6. Symbol 符号类型（ES6 新增）
+        var lzy_sym = Symbol("24001010527");
+
+        // 演示数据列表
+        var lzy_typeList = [
+            { lzy_name: "String", lzy_value: lzy_str, lzy_desc: "字符串类型，用引号括起来的文本" },
+            { lzy_name: "Number", lzy_value: lzy_num, lzy_desc: "数字类型，整数或浮点数" },
+            { lzy_name: "Boolean", lzy_value: lzy_bool, lzy_desc: "布尔类型，只有 true 和 false" },
+            { lzy_name: "Undefined", lzy_value: lzy_und, lzy_desc: "变量已声明但未赋值" },
+            { lzy_name: "Null", lzy_value: lzy_nul, lzy_desc: "表示空值，typeof 返回 object" },
+            { lzy_name: "Symbol", lzy_value: lzy_sym, lzy_desc: "符号类型，表示独一无二的值" }
+        ];
+
+        // 渲染卡片并输出到控制台
+        var lzy_grid = document.getElementById("lzy_grid");
+        for (var lzy_i = 0; lzy_i < lzy_typeList.length; lzy_i++) {
+            var lzy_item = lzy_typeList[lzy_i];
+            var lzy_typeofResult = typeof lzy_item.lzy_value;
+
+            console.log(lzy_item.lzy_name + "：值=" + String(lzy_item.lzy_value) + "，typeof=" + lzy_typeofResult);
+
+            var lzy_card = document.createElement("div");
+            lzy_card.className = "lzy_card";
+            lzy_card.innerHTML =
+                "<h3>" + lzy_item.lzy_name + "</h3>" +
+                "<p class='lzy_desc'>" + lzy_item.lzy_desc + "</p>" +
+                "<p>值：<span class='lzy_value'>" + String(lzy_item.lzy_value) + "</span></p>" +
+                "<p>typeof 结果：<span class='lzy_typeof'>" + lzy_typeofResult + "</span></p>";
+            lzy_grid.appendChild(lzy_card);
+        }
+    </script>
+</body>
+</html>
