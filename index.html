@@ -120,6 +120,23 @@
     .list{
         border-top:1px solid var(--border);
     }
+    .chapter{
+        display:flex;
+        align-items:center;
+        gap:14px;
+        padding:48px 14px 18px;
+        font-size:11px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        color:var(--muted);
+    }
+    .chapter span{color:var(--c2);white-space:nowrap;}
+    .chapter::after{
+        content:"";
+        flex:1;
+        height:1px;
+        background:linear-gradient(90deg,var(--border),transparent);
+    }
     .item{
         display:grid;
         grid-template-columns:64px 1fr auto 44px;
@@ -225,7 +242,7 @@
             </div>
             <div class="hero-side">
                 <p class="meta">学号 <b>527</b><br>姓名 <b>李知芸</b><br>班级 <b>计算机24005</b></p>
-                <p class="blurb">十二项课堂实践成果，涵盖 HTML 基础、超链接、表单、CSS 选择器、盒模型、图文排版、长度单位与 3D 动画。</p>
+                <p class="blurb">十八项课堂实践成果，涵盖 HTML 基础、超链接、表单、CSS 选择器、盒模型、图文排版、长度单位、3D 动画，以及 JSON 数据展示、fetch 接口、定时器与 Promise 异步流程。</p>
             </div>
         </header>
 
@@ -300,6 +317,45 @@
                 <span class="idx">12</span>
                 <span class="ttl">CSS3 3D 动画</span>
                 <span class="desc">3D 变换与动画演示</span>
+                <span class="go">→</span>
+            </a>
+
+            <div class="chapter"><span>Chapter 17</span> 数据交互与异步</div>
+
+            <a class="item" href="17-1.html">
+                <span class="idx">17-1</span>
+                <span class="ttl">JSON 数据展示</span>
+                <span class="desc">JSON.parse 解析与格式化输出</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="17-2.html">
+                <span class="idx">17-2</span>
+                <span class="ttl">fetch 获取接口</span>
+                <span class="desc">跨域接口请求与结果展示</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="17-3.html">
+                <span class="idx">17-3</span>
+                <span class="ttl">商品列表与详情</span>
+                <span class="desc">dummyjson 列表与详情页联动</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="17-4.html">
+                <span class="idx">17-4</span>
+                <span class="ttl">接口测试工具</span>
+                <span class="desc">GET / POST 请求与错误提示</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="17-5.html">
+                <span class="idx">17-5</span>
+                <span class="ttl">两种定时器</span>
+                <span class="desc">setTimeout 与 setInterval 演示</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="17-6.html">
+                <span class="idx">17-6</span>
+                <span class="ttl">Promise 包饺子</span>
+                <span class="desc">Promise.race / all 异步流程</span>
                 <span class="go">→</span>
             </a>
         </nav>
