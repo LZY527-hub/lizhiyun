@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健身运动科普 - 网页元素设计</title>
+    <link rel="stylesheet" href="./cdn/iconfont.css">
+    <style>
+        /* ===== 公共CSS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        ul {
+            list-style: none;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        img {
+            display: block;
+        }
+        .lzy_container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== 公共小节标题 ===== */
+        .lzy_section {
+            margin-top: 40px;
+        }
+        .lzy_secHead {
+            display: flex;
+            align-items: baseline;
+            border-bottom: 1px solid #e3e9e7;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .lzy_secHead h2 {
+            font-size: 22px;
+            border-left: 4px solid #17b78a;
+            padding-left: 10px;
+        }
+        .lzy_secHead span {
+            margin-left: 12px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* ===== 元素一：导航 ===== */
+        .lzy_header {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        .lzy_nav {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            min-height: 64px;
+            padding: 8px 20px;
+        }
+        .lzy_logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #17b78a;
+            white-space: nowrap;
+        }
+        .lzy_logo .iconfont {
+            font-size: 30px;
+            margin-right: 8px;
+        }
+        .lzy_menu {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 40px;
+        }
+        .lzy_menu a {
+            display: block;
+            padding: 0 16px;
+            line-height: 48px;
+            font-size: 15px;
+            color: #555;
+            white-space: nowrap;
+        }
+        .lzy_menu a:hover {
+            color: #17b78a;
+        }
+        .lzy_menu .lzy_active a {
+            color: #17b78a;
+            font-weight: bold;
+            border-bottom: 3px solid #17b78a;
+        }
+        .lzy_search {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            background-color: #f2f4f3;
+            border-radius: 17px;
+            padding: 0 14px;
+        }
+        .lzy_search input {
+            border: none;
+            outline: none;
+            background: none;
+            width: 160px;
+            height: 34px;
+            font-size: 13px;
+        }
+        .lzy_search .iconfont {
+            color: #999;
+        }
+
+        /* ===== 元素二：上图下文 ===== */
+        .lzy_cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .lzy_card {
+            flex: 1;
+            min-width: 280px;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+        .lzy_card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        }
+        .lzy_card img {
+            width: 100%;
+            height: 175px;
+            object-fit: cover;
+        }
+        .lzy_cardBody {
+            padding: 16px;
+        }
+        .lzy_tag {
+            display: inline-block;
+            font-size: 12px;
+            color: #17b78a;
+            background-color: #e6f7f1;
+            border-radius: 10px;
+            padding: 2px 10px;
+        }
+        .lzy_cardBody h3 {
+            font-size: 18px;
+            margin: 10px 0 8px;
+        }
+        .lzy_cardBody p {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.7;
+            /* 多行文字溢出省略 */
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+        .lzy_cardMeta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 14px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* ===== 元素三：左图右文 ===== */
+        .lzy_articles {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 10px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+        .lzy_article {
+            display: flex;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .lzy_article:last-child {
+            border-bottom: none;
+        }
+        .lzy_article img {
+            width: 200px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .lzy_articleBody {
+            display: flex;
+            flex-direction: column;
+            margin-left: 18px;
+            flex-grow: 1;
+        }
+        .lzy_articleBody h3 {
+            font-size: 17px;
+        }
+        .lzy_articleBody h3 a:hover {
+            color: #17b78a;
+        }
+        .lzy_articleBody p {
+            flex-grow: 1;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #888;
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+        }
+        .lzy_meta {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .lzy_meta span {
+            margin-right: 20px;
+        }
+        .lzy_meta .iconfont {
+            font-size: 14px;
+            margin-right: 4px;
+        }
+
+        /* ===== 响应式适配（窄视口） ===== */
+        @media (max-width: 768px) {
+            .lzy_menu {
+                margin-left: 0;
+                width: 100%;
+            }
+            .lzy_menu a {
+                padding: 0 12px;
+            }
+            .lzy_search {
+                margin: 6px 0 6px auto;
+            }
+        }
+        @media (max-width: 640px) {
+            .lzy_article {
+                flex-direction: column;
+            }
+            .lzy_article img {
+                width: 100%;
+                height: 170px;
+            }
+            .lzy_articleBody {
+                margin-left: 0;
+                margin-top: 12px;
+            }
+        }
+
+        /* ===== 页脚 ===== */
+        .lzy_footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-10-28  功能名称：健身运动科普网页元素设计（导航、上图下文、左图右文） -->
+
+    <!-- 元素一：导航 -->
+    <header class="lzy_header">
+        <nav class="lzy_nav lzy_container">
+            <a class="lzy_logo" href="#">
+                <i class="iconfont icon-jianshen"></i>健身科普
+            </a>
+            <ul class="lzy_menu">
+                <li class="lzy_active"><a href="#">首页</a></li>
+                <li><a href="#">运动知识</a></li>
+                <li><a href="#">训练计划</a></li>
+                <li><a href="#">营养饮食</a></li>
+                <li><a href="#">关于我们</a></li>
+            </ul>
+            <div class="lzy_search">
+                <input type="text" placeholder="搜索健身知识">
+                <i class="iconfont icon-search"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main class="lzy_container">
+        <!-- 元素二：上图下文 -->
+        <section class="lzy_section">
+            <div class="lzy_secHead">
+                <h2>热门科普</h2>
+                <span>上图下文 · 科学健身知识卡片</span>
+            </div>
+            <ul class="lzy_cards">
+                <li class="lzy_card">
+                    <img src="./img/fitness_card1.jpg" alt="有氧运动">
+                    <div class="lzy_cardBody">
+                        <span class="lzy_tag">有氧运动</span>
+                        <h3>跑步的正确姿势与呼吸节奏</h3>
+                        <p>跑步时保持身体微微前倾，前脚掌先着地，配合两步一吸、两步一呼的节奏，能有效减少膝盖损伤并提升耐力。</p>
+                        <div class="lzy_cardMeta">
+                            <span>阅读 2.3w</span>
+                            <span>2026-10-25</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="lzy_card">
+                    <img src="./img/fitness_card2.jpg" alt="力量训练">
+                    <div class="lzy_cardBody">
+                        <span class="lzy_tag">力量训练</span>
+                        <h3>哑铃入门：从小重量开始</h3>
+                        <p>新手进行力量训练应选择能标准完成 12 次的重量，注意动作幅度与发力顺序，避免借力造成的运动损伤。</p>
+                        <div class="lzy_cardMeta">
+                            <span>阅读 1.8w</span>
+                            <span>2026-10-23</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="lzy_card">
+                    <img src="./img/fitness_card3.jpg" alt="拉伸放松">
+                    <div class="lzy_cardBody">
+                        <span class="lzy_tag">拉伸放松</span>
+                        <h3>运动后为什么要拉伸</h3>
+                        <p>静态拉伸能帮助肌肉恢复弹性、缓解延迟性酸痛，每个动作保持 20 至 30 秒，呼吸均匀不要憋气。</p>
+                        <div class="lzy_cardMeta">
+                            <span>阅读 1.5w</span>
+                            <span>2026-10-21</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- 元素三：左图右文 -->
+        <section class="lzy_section">
+            <div class="lzy_secHead">
+                <h2>科普文章</h2>
+                <span>左图右文 · 最新健身科普资讯</span>
+            </div>
+            <ul class="lzy_articles">
+                <li class="lzy_article">
+                    <img src="./img/fitness_article1.jpg" alt="健身餐">
+                    <div class="lzy_articleBody">
+                        <h3><a href="#">健身期间怎么吃？蛋白质摄入全指南</a></h3>
+                        <p>增肌期建议每公斤体重摄入 1.6 至 2.2 克蛋白质，鸡胸肉、鸡蛋、鱼虾和豆制品都是优质来源，搭配碳水化合物训练效果更佳。</p>
+                        <div class="lzy_meta">
+                            <span><i class="iconfont icon-wode"></i>李知芸</span>
+                            <span>2026-10-26</span>
+                            <span>阅读 9865</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="lzy_article">
+                    <img src="./img/fitness_article2.jpg" alt="热身训练">
+                    <div class="lzy_articleBody">
+                        <h3><a href="#">训练前 10 分钟：动态热身动作详解</a></h3>
+                        <p>动态热身能提升体温、激活目标肌群并增加关节活动度，开合跳、高抬腿与弓步转体是三个高效实用的热身动作。</p>
+                        <div class="lzy_meta">
+                            <span><i class="iconfont icon-wode"></i>李知芸</span>
+                            <span>2026-10-24</span>
+                            <span>阅读 7521</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="lzy_article">
+                    <img src="./img/fitness_article3.jpg" alt="运动恢复">
+                    <div class="lzy_articleBody">
+                        <h3><a href="#">休息也是训练：运动恢复的科学</a></h3>
+                        <p>肌肉在休息时生长，保证 7 至 9 小时睡眠、及时补充水分与电解质，大肌群训练后建议间隔 48 小时再练同一部位。</p>
+                        <div class="lzy_meta">
+                            <span><i class="iconfont icon-wode"></i>李知芸</span>
+                            <span>2026-10-22</span>
+                            <span>阅读 6102</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="lzy_footer">
+        <p>健身运动科普网 · 科学运动 健康生活</p>
+    </footer>
+</body>
+</html>

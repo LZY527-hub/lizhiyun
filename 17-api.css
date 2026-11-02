@@ -1,0 +1,329 @@
+/* 姓名：李知芸  日期：2026-11-02  功能名称：17 接口练习公共样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: "Microsoft YaHei", sans-serif;
+    background-color: #f4f7f6;
+    color: #1f2a27;
+    line-height: 1.6;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+img {
+    display: block;
+}
+.lzy_header {
+    background: linear-gradient(135deg, #0d3b30 0%, #14765d 55%, #17b78a 100%);
+    color: #fff;
+    padding: 44px 24px 38px;
+}
+.lzy_headerInner {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+.lzy_badge {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.16);
+    margin-bottom: 14px;
+}
+.lzy_header h1 {
+    font-size: 26px;
+    letter-spacing: 2px;
+}
+.lzy_sub {
+    margin-top: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.76);
+    word-break: break-all;
+}
+.lzy_back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.86);
+    margin-bottom: 14px;
+    transition: color 0.2s ease;
+}
+.lzy_back:hover {
+    color: #fff;
+}
+.lzy_main {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+}
+.lzy_panel {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 26px rgba(23, 43, 38, 0.06);
+}
+.lzy_panelTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-size: 17px;
+    color: #14251f;
+}
+.lzy_panelTitle::before {
+    content: "";
+    width: 4px;
+    height: 18px;
+    border-radius: 2px;
+    background-color: #17b78a;
+}
+.lzy_api {
+    display: block;
+    background-color: #f2faf7;
+    border: 1px dashed #c9e9dc;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    color: #14765d;
+    word-break: break-all;
+}
+.lzy_hint {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #8a9a94;
+}
+.lzy_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.lzy_btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #17b78a 0%, #0f8f6d 100%);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(23, 183, 138, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.lzy_btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(23, 183, 138, 0.38);
+}
+.lzy_btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+.lzy_btnGhost {
+    padding: 9px 20px;
+    border: 1px solid #cdebe0;
+    border-radius: 999px;
+    background-color: #fff;
+    color: #14765d;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.lzy_btnGhost:hover {
+    background-color: #f2faf7;
+    border-color: #17b78a;
+}
+.lzy_btnGhost:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.lzy_status {
+    font-size: 13px;
+    color: #8a9a94;
+}
+.lzy_status.lzy_success {
+    color: #14765d;
+}
+.lzy_status.lzy_error {
+    color: #d64545;
+}
+.lzy_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+.lzy_card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(23, 43, 38, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.lzy_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(23, 43, 38, 0.13);
+}
+.lzy_thumb {
+    position: relative;
+    background: linear-gradient(135deg, #f2faf7 0%, #e6f5ee 100%);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+.lzy_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+    transition: transform 0.3s ease;
+}
+.lzy_card:hover .lzy_thumb img {
+    transform: scale(1.05);
+}
+.lzy_cardBody {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 14px 16px 16px;
+}
+.lzy_tag {
+    align-self: flex-start;
+    font-size: 11px;
+    color: #17b78a;
+    background-color: #eafaf3;
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin-bottom: 8px;
+    text-transform: capitalize;
+}
+.lzy_name {
+    font-size: 15px;
+    color: #1e2a27;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.lzy_brand {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #9aa5a1;
+}
+.lzy_priceRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 12px;
+}
+.lzy_price {
+    font-size: 18px;
+    color: #0f8f6d;
+    font-weight: bold;
+}
+.lzy_rating {
+    font-size: 12px;
+    color: #b58900;
+}
+.lzy_more {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eef2f0;
+    font-size: 12px;
+    color: #8a9a94;
+}
+.lzy_card:hover .lzy_more {
+    color: #17b78a;
+}
+.lzy_loadMoreWrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+.lzy_tableWrap {
+    overflow-x: auto;
+}
+.lzy_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.lzy_table th,
+.lzy_table td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f0;
+}
+.lzy_table th {
+    font-size: 13px;
+    font-weight: normal;
+    color: #8a9a94;
+    background-color: #f8fbfa;
+}
+.lzy_table tbody tr:hover td {
+    background-color: #f6fbf9;
+}
+.lzy_code {
+    background-color: #0f1f1a;
+    color: #bfe9d9;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre;
+    overflow: auto;
+    max-height: 280px;
+}
+.lzy_empty {
+    grid-column: 1 / -1;
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 46px 20px;
+    text-align: center;
+    color: #8a9a94;
+    font-size: 14px;
+    box-shadow: 0 6px 18px rgba(23, 43, 38, 0.06);
+}
+@media (max-width: 600px) {
+    .lzy_header {
+        padding: 32px 18px 28px;
+    }
+    .lzy_header h1 {
+        font-size: 21px;
+    }
+    .lzy_main {
+        padding: 20px 16px 48px;
+    }
+    .lzy_panel {
+        padding: 18px;
+    }
+    .lzy_grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+    .lzy_cardBody {
+        padding: 12px;
+    }
+    .lzy_name {
+        font-size: 14px;
+    }
+}

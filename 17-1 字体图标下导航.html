@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健身科普 - 字体图标下导航</title> 
+    <link rel="stylesheet" href="./font/iconfont.css">
+    <style>
+        /* ===== 公共CSS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            /* 细腻渐变底色，提升质感 */
+            background: linear-gradient(180deg, #eaf2ef 0%, #f6faf8 45%, #eaf2ef 100%);
+            color: #333;
+            /* 为固定下导航留出空间 */
+            padding-bottom: 76px;
+        }
+        ul {
+            list-style: none;
+        }
+        img {
+            display: block;
+        }
+
+        /* ===== 模拟页面内容 ===== */
+        .lzy_banner {
+            position: relative;
+            overflow: hidden;
+        }
+        /* 底部渐变压暗，增强标题可读性与高级感 */
+        .lzy_banner::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 55%;
+            background: linear-gradient(180deg, rgba(10, 20, 17, 0) 0%, rgba(10, 20, 17, 0.55) 100%);
+        }
+        .lzy_banner img {
+            width: 100%;
+            height: auto;
+        }
+        .lzy_bannerTitle {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            z-index: 1;
+            color: #fff;
+            font-size: 24px;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+        }
+        /* 标题上方品牌色装饰条 */
+        .lzy_bannerTitle::before {
+            content: "";
+            display: block;
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: #17b78a;
+            margin-bottom: 10px;
+        }
+        .lzy_list {
+            padding: 18px;
+        }
+        .lzy_item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            /* 柔和分层阴影 + 悬停浮动效果 */
+            box-shadow: 0 6px 18px rgba(23, 43, 38, 0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .lzy_item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(23, 43, 38, 0.12);
+        }
+        /* 卡片右侧引导箭头 */
+        .lzy_item::after {
+            content: "›";
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            color: #c8d2ce;
+            transition: color 0.25s ease, right 0.25s ease;
+        }
+        .lzy_item:hover::after {
+            color: #17b78a;
+            right: 14px;
+        }
+        .lzy_itemIcon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            /* 品牌色渐变图标底 */
+            background: linear-gradient(135deg, #e9faf3 0%, #c9efdf 100%);
+            color: #17b78a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .lzy_itemIcon .iconfont {
+            font-size: 26px;
+        }
+        .lzy_itemText {
+            margin-left: 12px;
+        }
+        .lzy_itemText h3 {
+            font-size: 16px;
+            color: #1e2a27;
+            letter-spacing: 0.5px;
+        }
+        .lzy_itemText p {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #9aa5a1;
+        }
+
+        /* ===== 下导航（字体图标版，固定 + 自适应宽度） ===== */
+        .lzy_tabbar {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            /* 毛玻璃效果导航栏 */
+            background-color: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 -4px 24px rgba(23, 43, 38, 0.1);
+        }
+        .lzy_tabs {
+            display: flex;
+            /* 每个导航项等宽，随视口自适应 */
+        }
+        .lzy_tabs li {
+            flex: 1;
+        }
+        .lzy_tabs a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0 8px;
+            text-decoration: none;
+            color: #8a8a8a;
+            font-size: 12px;
+            transition: color 0.25s ease;
+        }
+        /* 用CSS修饰字体图标的大小与颜色 */
+        .lzy_tabs .iconfont {
+            font-size: 24px;
+            margin-bottom: 3px;
+            transition: transform 0.25s ease;
+        }
+        .lzy_tabs a:hover {
+            color: #17b78a;
+        }
+        .lzy_tabs a:hover .iconfont {
+            transform: translateY(-2px);
+        }
+        /* 选中项：品牌色 + 图标微放大 + 顶部指示条 */
+        .lzy_tabs .lzy_on a {
+            color: #17b78a;
+            font-weight: bold;
+        }
+        .lzy_tabs .lzy_on a::before {
+            content: "";
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+            background-color: #17b78a;
+            margin-bottom: 4px;
+        }
+        .lzy_tabs .lzy_on .iconfont {
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-10-28  功能名称：健身科普下导航（字体图标版） -->
+
+    <!-- 模拟三级项目页面内容 -->
+    <div class="lzy_banner">
+        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=fitness%20people%20running%20outdoor%20in%20sunny%20park%20cardio%20workout%20realistic%20photography&image_size=landscape_16_9" alt="健身 banner">
+        <h2 class="lzy_bannerTitle">科学运动 · 健康生活</h2>
+    </div>
+    <ul class="lzy_list">
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-gangling"></i></span>
+            <div class="lzy_itemText">
+                <h3>今日训练计划</h3>
+                <p>上肢力量 30 分钟 · 中等强度</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-icon"></i></span>
+            <div class="lzy_itemText">
+                <h3>营养饮食建议</h3>
+                <p>每日蛋白质摄入指南</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-jianshen"></i></span>
+            <div class="lzy_itemText">
+                <h3>健身知识科普</h3>
+                <p>运动后为什么要拉伸</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-search"></i></span>
+            <div class="lzy_itemText">
+                <h3>搜索健身知识</h3>
+                <p>查找动作要领与训练方案</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-paobuji"></i></span>
+            <div class="lzy_itemText">
+                <h3>有氧运动指南</h3>
+                <p>跑步燃脂的正确姿势与配速</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-jianshenfang"></i></span>
+            <div class="lzy_itemText">
+                <h3>训练场馆推荐</h3>
+                <p>附近健身房与器械使用说明</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-yundong"></i></span>
+            <div class="lzy_itemText">
+                <h3>每日运动打卡</h3>
+                <p>坚持记录，见证每一次进步</p>
+            </div>
+        </li>
+        <li class="lzy_item">
+            <span class="lzy_itemIcon"><i class="iconfont icon-ganglingpian"></i></span>
+            <div class="lzy_itemText">
+                <h3>力量训练入门</h3>
+                <p>杠铃动作标准示范与常见错误</p>
+            </div>
+        </li>
+    </ul>
+
+    <!-- 下导航：字体图标版 -->
+    <nav class="lzy_tabbar">
+        <ul class="lzy_tabs" id="lzy_tabs">
+            <li class="lzy_on"><a href="#"><i class="iconfont icon-shouye"></i>首页</a></li>
+            <li><a href="#"><i class="iconfont icon-gangling"></i>训练</a></li>
+            <li><a href="#"><i class="iconfont icon-jianshenfang"></i>场馆</a></li>
+            <li><a href="#"><i class="iconfont icon-icon"></i>饮食</a></li>
+            <li><a href="#"><i class="iconfont icon-wode"></i>我的</a></li>
+        </ul>
+    </nav>
+
+    <script>
+        // 点击切换导航选中状态
+        var lzy_tabs = document.getElementById("lzy_tabs");
+        var lzy_items = lzy_tabs.getElementsByTagName("li");
+        for (var lzy_i = 0; lzy_i < lzy_items.length; lzy_i++) {
+            lzy_items[lzy_i].onclick = function () {
+                for (var lzy_j = 0; lzy_j < lzy_items.length; lzy_j++) {
+                    lzy_items[lzy_j].className = "";
+                }
+                this.className = "lzy_on";
+            };
+        }
+    </script>
+</body>
+</html>

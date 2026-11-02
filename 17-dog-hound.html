@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17 hound 品种随机图片</title>
+    <link rel="stylesheet" href="./17-api.css">
+    <style>
+        .lzy_dogGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .lzy_dogCard {
+            background-color: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(23, 43, 38, 0.06);
+        }
+        .lzy_dogCard img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f2faf7 0%, #e6f5ee 100%);
+        }
+        .lzy_dogInfo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #8a9a94;
+        }
+        .lzy_dogInfo b {
+            font-weight: normal;
+            color: #14765d;
+            text-transform: capitalize;
+        }
+        @media (max-width: 860px) {
+            .lzy_dogGrid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 540px) {
+            .lzy_dogGrid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17 hound 品种随机图片（dog.ceo） -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">DOG API</span>
+            <h1>hound 品种随机 3 张图片</h1>
+            <p class="lzy_sub">指定 breed 为 hound，一次请求返回该品种下的 3 张随机图片</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">接口信息</h2>
+            <code class="lzy_api">GET https://dog.ceo/api/breed/hound/images/random/3</code>
+            <p class="lzy_hint">返回字段 message 是一个数组，里面存放 3 张图片的地址。</p>
+        </section>
+
+        <section class="lzy_panel">
+            <div class="lzy_toolbar">
+                <span class="lzy_status" id="lzy_status">正在请求接口…</span>
+                <button class="lzy_btn" id="lzy_reload" type="button">换一批</button>
+            </div>
+            <div class="lzy_dogGrid" id="lzy_grid">
+                <div class="lzy_empty">正在加载图片…</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var lzy_apiUrl = "https://dog.ceo/api/breed/hound/images/random/3";
+        var lzy_reloadBtn = document.getElementById("lzy_reload");
+        var lzy_status = document.getElementById("lzy_status");
+        var lzy_grid = document.getElementById("lzy_grid");
+
+        // 从图片地址中解析品种，例如 .../breeds/hound-afghan/xxx.jpg
+        function lzy_parseBreed(lzy_url) {
+            var lzy_match = lzy_url.match(/\/breeds\/([^/]+)\//);
+            if (!lzy_match) {
+                return "hound";
+            }
+            return lzy_match[1].replace(/-/g, " ");
+        }
+
+        async function lzy_loadDogs() {
+            lzy_reloadBtn.disabled = true;
+            lzy_status.textContent = "正在请求接口…";
+            lzy_status.className = "lzy_status";
+            lzy_grid.innerHTML = '<div class="lzy_empty">正在加载图片…</div>';
+
+            var lzy_startTime = Date.now();
+            try {
+                var lzy_response = await fetch(lzy_apiUrl, { cache: "no-store" });
+                if (!lzy_response.ok) {
+                    throw new Error("HTTP 状态码 " + lzy_response.status);
+                }
+                var lzy_data = await lzy_response.json();
+                if (lzy_data.status !== "success") {
+                    throw new Error("接口状态：" + lzy_data.status);
+                }
+
+                var lzy_html = "";
+                lzy_data.message.forEach(function (lzy_url, lzy_index) {
+                    lzy_html += '<div class="lzy_dogCard">'
+                        + '<img src="' + lzy_url + '" alt="hound 狗狗图片 ' + (lzy_index + 1) + '">'
+                        + '<div class="lzy_dogInfo"><span>图片 ' + (lzy_index + 1) + '</span><b>' + lzy_parseBreed(lzy_url) + '</b></div>'
+                        + '</div>';
+                });
+                lzy_grid.innerHTML = lzy_html;
+
+                lzy_status.textContent = "请求成功 · 共 " + lzy_data.message.length + " 张 · 耗时 " + (Date.now() - lzy_startTime) + " ms";
+                lzy_status.className = "lzy_status lzy_success";
+            } catch (lzy_error) {
+                lzy_grid.innerHTML = '<div class="lzy_empty">图片获取失败，请点击“换一批”重试。</div>';
+                lzy_status.textContent = "请求失败：" + lzy_error.message;
+                lzy_status.className = "lzy_status lzy_error";
+            } finally {
+                lzy_reloadBtn.disabled = false;
+            }
+        }
+
+        lzy_reloadBtn.addEventListener("click", lzy_loadDogs);
+        lzy_loadDogs();
+    </script>
+</body>
+</html>

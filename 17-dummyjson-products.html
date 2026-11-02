@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17 DummyJSON 商品列表</title>
+    <link rel="stylesheet" href="./17-api.css">
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17 DummyJSON 商品列表 -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">PRODUCT API</span>
+            <h1>DummyJSON 商品列表</h1>
+            <p class="lzy_sub">调用 DummyJSON 商品接口，分页加载商品；点击卡片可进入已有的商品详情页</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">接口信息</h2>
+            <code class="lzy_api">GET https://dummyjson.com/products</code>
+            <p class="lzy_hint">使用 limit 与 skip 参数分页，每次加载 12 件商品，返回字段 total 表示商品总数。</p>
+        </section>
+
+        <section class="lzy_panel">
+            <div class="lzy_toolbar">
+                <span class="lzy_status" id="lzy_status">正在加载商品列表…</span>
+                <button class="lzy_btn" id="lzy_reload" type="button">刷新列表</button>
+            </div>
+            <div class="lzy_grid" id="lzy_grid">
+                <div class="lzy_empty">正在请求接口，请稍候…</div>
+            </div>
+            <div class="lzy_loadMoreWrap">
+                <button class="lzy_btnGhost" id="lzy_more" type="button" hidden>加载更多</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var lzy_apiUrl = "https://dummyjson.com/products";
+        var lzy_pageSize = 12;
+        var lzy_skip = 0;
+        var lzy_total = 0;
+        var lzy_reloadBtn = document.getElementById("lzy_reload");
+        var lzy_moreBtn = document.getElementById("lzy_more");
+        var lzy_status = document.getElementById("lzy_status");
+        var lzy_grid = document.getElementById("lzy_grid");
+
+        // 转义接口文本，避免特殊字符被解析成 HTML
+        function lzy_escapeHtml(lzy_text) {
+            return String(lzy_text).replace(/[&<>"']/g, function (lzy_char) {
+                var lzy_map = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                };
+                return lzy_map[lzy_char];
+            });
+        }
+
+        function lzy_buildCards(lzy_products) {
+            var lzy_html = "";
+            lzy_products.forEach(function (lzy_product) {
+                lzy_html += '<a class="lzy_card" href="17-3-detail.html?id=' + lzy_product.id + '">'
+                    + '<div class="lzy_thumb"><img src="' + lzy_escapeHtml(lzy_product.thumbnail) + '" alt="' + lzy_escapeHtml(lzy_product.title) + '" loading="lazy"></div>'
+                    + '<div class="lzy_cardBody">'
+                    + '<span class="lzy_tag">' + lzy_escapeHtml(lzy_product.category) + '</span>'
+                    + '<h3 class="lzy_name">' + lzy_escapeHtml(lzy_product.title) + '</h3>'
+                    + '<p class="lzy_brand">品牌：' + lzy_escapeHtml(lzy_product.brand || "暂无") + '</p>'
+                    + '<div class="lzy_priceRow">'
+                    + '<strong class="lzy_price">$' + lzy_product.price.toFixed(2) + '</strong>'
+                    + '<span class="lzy_rating">★ ' + lzy_product.rating.toFixed(1) + '</span>'
+                    + '</div>'
+                    + '<div class="lzy_more"><span>库存 ' + lzy_product.stock + ' 件</span><span>查看详情 ›</span></div>'
+                    + '</div>'
+                    + '</a>';
+            });
+            return lzy_html;
+        }
+
+        // reset 为 true 时清空并重新从第 0 条开始，否则追加下一页
+        async function lzy_loadProducts(lzy_reset) {
+            var lzy_url = lzy_apiUrl + "?limit=" + lzy_pageSize + "&skip=" + lzy_skip;
+            lzy_reloadBtn.disabled = true;
+            lzy_moreBtn.disabled = true;
+            if (lzy_reset) {
+                lzy_status.textContent = "正在加载商品列表…";
+                lzy_status.className = "lzy_status";
+                lzy_grid.innerHTML = '<div class="lzy_empty">正在请求接口，请稍候…</div>';
+            }
+
+            var lzy_startTime = Date.now();
+            try {
+                var lzy_response = await fetch(lzy_url, { cache: "no-store" });
+                if (!lzy_response.ok) {
+                    throw new Error("HTTP 状态码 " + lzy_response.status);
+                }
+                var lzy_data = await lzy_response.json();
+                lzy_total = lzy_data.total;
+
+                if (lzy_reset) {
+                    lzy_grid.innerHTML = "";
+                }
+                lzy_grid.innerHTML += lzy_buildCards(lzy_data.products);
+                lzy_skip += lzy_data.products.length;
+
+                if (lzy_skip >= lzy_total) {
+                    lzy_moreBtn.hidden = true;
+                } else {
+                    lzy_moreBtn.hidden = false;
+                    lzy_moreBtn.textContent = "加载更多（剩余 " + (lzy_total - lzy_skip) + " 件）";
+                }
+
+                lzy_status.textContent = "加载成功 · 共 " + lzy_total + " 件 · 当前显示 " + lzy_skip + " 件 · 耗时 " + (Date.now() - lzy_startTime) + " ms";
+                lzy_status.className = "lzy_status lzy_success";
+            } catch (lzy_error) {
+                if (lzy_reset) {
+                    lzy_grid.innerHTML = '<div class="lzy_empty">商品列表加载失败，请点击“刷新列表”重试。</div>';
+                }
+                lzy_status.textContent = "加载失败：" + lzy_error.message;
+                lzy_status.className = "lzy_status lzy_error";
+            } finally {
+                lzy_reloadBtn.disabled = false;
+                lzy_moreBtn.disabled = false;
+            }
+        }
+
+        lzy_reloadBtn.addEventListener("click", function () {
+            lzy_skip = 0;
+            lzy_loadProducts(true);
+        });
+        lzy_moreBtn.addEventListener("click", function () {
+            lzy_loadProducts(false);
+        });
+        lzy_loadProducts(true);
+    </script>
+</body>
+</html>

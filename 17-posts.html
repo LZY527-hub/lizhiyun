@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17 文章列表</title>
+    <link rel="stylesheet" href="./17-api.css">
+    <style>
+        .lzy_postList {
+            display: grid;
+            gap: 12px;
+        }
+        .lzy_post {
+            display: flex;
+            gap: 16px;
+            background-color: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 6px 18px rgba(23, 43, 38, 0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .lzy_post:hover {
+            transform: translateX(4px);
+            box-shadow: 0 12px 26px rgba(23, 43, 38, 0.1);
+        }
+        .lzy_postId {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            background-color: #eafaf3;
+            color: #0f8f6d;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .lzy_postTitle {
+            margin-bottom: 6px;
+            font-size: 15px;
+            color: #1e2a27;
+            text-transform: capitalize;
+        }
+        .lzy_postBody {
+            font-size: 13px;
+            color: #8a9a94;
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17 文章列表（jsonplaceholder） -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">POST API</span>
+            <h1>文章列表</h1>
+            <p class="lzy_sub">调用 JSONPlaceholder 接口，分页展示返回的 100 篇文章</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">接口信息</h2>
+            <code class="lzy_api">GET https://jsonplaceholder.typicode.com/posts</code>
+            <p class="lzy_hint">接口返回一个包含 100 篇文章的数组，每篇文章有 id、title、body 等字段。</p>
+        </section>
+
+        <section class="lzy_panel">
+            <div class="lzy_toolbar">
+                <span class="lzy_status" id="lzy_status">正在加载文章列表…</span>
+                <button class="lzy_btn" id="lzy_reload" type="button">刷新列表</button>
+            </div>
+            <div class="lzy_postList" id="lzy_list">
+                <div class="lzy_empty">正在请求接口，请稍候…</div>
+            </div>
+            <div class="lzy_loadMoreWrap">
+                <button class="lzy_btnGhost" id="lzy_more" type="button" hidden>加载更多</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var lzy_apiUrl = "https://jsonplaceholder.typicode.com/posts";
+        var lzy_pageSize = 12;
+        var lzy_allPosts = [];
+        var lzy_shownCount = 0;
+        var lzy_reloadBtn = document.getElementById("lzy_reload");
+        var lzy_moreBtn = document.getElementById("lzy_more");
+        var lzy_status = document.getElementById("lzy_status");
+        var lzy_list = document.getElementById("lzy_list");
+
+        // 转义接口文本，避免特殊字符被解析成 HTML
+        function lzy_escapeHtml(lzy_text) {
+            return String(lzy_text).replace(/[&<>"']/g, function (lzy_char) {
+                var lzy_map = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                };
+                return lzy_map[lzy_char];
+            });
+        }
+
+        // 每次追加 12 篇，直到全部展示完
+        function lzy_renderNextPage() {
+            var lzy_end = Math.min(lzy_shownCount + lzy_pageSize, lzy_allPosts.length);
+            var lzy_html = "";
+            for (var lzy_i = lzy_shownCount; lzy_i < lzy_end; lzy_i++) {
+                var lzy_post = lzy_allPosts[lzy_i];
+                lzy_html += '<div class="lzy_post">'
+                    + '<span class="lzy_postId">#' + lzy_post.id + '</span>'
+                    + '<div><h3 class="lzy_postTitle">' + lzy_escapeHtml(lzy_post.title) + '</h3>'
+                    + '<p class="lzy_postBody">' + lzy_escapeHtml(lzy_post.body) + '</p></div>'
+                    + '</div>';
+            }
+            lzy_list.innerHTML += lzy_html;
+            lzy_shownCount = lzy_end;
+
+            if (lzy_shownCount >= lzy_allPosts.length) {
+                lzy_moreBtn.hidden = true;
+            } else {
+                lzy_moreBtn.hidden = false;
+                lzy_moreBtn.textContent = "加载更多（剩余 " + (lzy_allPosts.length - lzy_shownCount) + " 篇）";
+            }
+            lzy_status.textContent = "当前显示 " + lzy_shownCount + " / " + lzy_allPosts.length + " 篇";
+        }
+
+        async function lzy_loadPosts() {
+            lzy_reloadBtn.disabled = true;
+            lzy_moreBtn.hidden = true;
+            lzy_status.textContent = "正在加载文章列表…";
+            lzy_status.className = "lzy_status";
+            lzy_list.innerHTML = '<div class="lzy_empty">正在请求接口，请稍候…</div>';
+
+            var lzy_startTime = Date.now();
+            try {
+                var lzy_response = await fetch(lzy_apiUrl, { cache: "no-store" });
+                if (!lzy_response.ok) {
+                    throw new Error("HTTP 状态码 " + lzy_response.status);
+                }
+                lzy_allPosts = await lzy_response.json();
+                lzy_shownCount = 0;
+                lzy_list.innerHTML = "";
+                lzy_renderNextPage();
+
+                lzy_status.textContent = "加载成功 · 共 " + lzy_allPosts.length + " 篇 · 耗时 " + (Date.now() - lzy_startTime) + " ms";
+                lzy_status.className = "lzy_status lzy_success";
+            } catch (lzy_error) {
+                lzy_list.innerHTML = '<div class="lzy_empty">文章列表加载失败，请点击“刷新列表”重试。</div>';
+                lzy_status.textContent = "加载失败：" + lzy_error.message;
+                lzy_status.className = "lzy_status lzy_error";
+            } finally {
+                lzy_reloadBtn.disabled = false;
+            }
+        }
+
+        lzy_reloadBtn.addEventListener("click", lzy_loadPosts);
+        lzy_moreBtn.addEventListener("click", lzy_renderNextPage);
+        lzy_loadPosts();
+    </script>
+</body>
+</html>

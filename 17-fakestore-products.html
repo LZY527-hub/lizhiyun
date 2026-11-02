@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17 Fake Store 商品列表</title>
+    <link rel="stylesheet" href="./17-api.css">
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17 Fake Store 商品列表 -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">STORE API</span>
+            <h1>Fake Store 商品列表</h1>
+            <p class="lzy_sub">调用 Fake Store API 获取全部商品，并展示图片、标题、价格与评分</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">接口信息</h2>
+            <code class="lzy_api">GET https://fakestoreapi.com/products</code>
+            <p class="lzy_hint">接口返回一个包含 20 件商品的数组，rating 字段中包含评分 rate 和评价数量 count。</p>
+        </section>
+
+        <section class="lzy_panel">
+            <div class="lzy_toolbar">
+                <span class="lzy_status" id="lzy_status">正在加载商品列表…</span>
+                <button class="lzy_btn" id="lzy_reload" type="button">刷新列表</button>
+            </div>
+            <div class="lzy_grid" id="lzy_grid">
+                <div class="lzy_empty">正在请求接口，请稍候…</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var lzy_apiUrl = "https://fakestoreapi.com/products";
+        var lzy_reloadBtn = document.getElementById("lzy_reload");
+        var lzy_status = document.getElementById("lzy_status");
+        var lzy_grid = document.getElementById("lzy_grid");
+
+        // 转义接口文本，避免特殊字符被解析成 HTML
+        function lzy_escapeHtml(lzy_text) {
+            return String(lzy_text).replace(/[&<>"']/g, function (lzy_char) {
+                var lzy_map = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                };
+                return lzy_map[lzy_char];
+            });
+        }
+
+        async function lzy_loadProducts() {
+            lzy_reloadBtn.disabled = true;
+            lzy_status.textContent = "正在加载商品列表…";
+            lzy_status.className = "lzy_status";
+            lzy_grid.innerHTML = '<div class="lzy_empty">正在请求接口，请稍候…</div>';
+
+            var lzy_startTime = Date.now();
+            try {
+                var lzy_response = await fetch(lzy_apiUrl, { cache: "no-store" });
+                if (!lzy_response.ok) {
+                    throw new Error("HTTP 状态码 " + lzy_response.status);
+                }
+                var lzy_products = await lzy_response.json();
+
+                var lzy_html = "";
+                lzy_products.forEach(function (lzy_product) {
+                    lzy_html += '<div class="lzy_card">'
+                        + '<div class="lzy_thumb"><img src="' + lzy_escapeHtml(lzy_product.image) + '" alt="' + lzy_escapeHtml(lzy_product.title) + '" loading="lazy"></div>'
+                        + '<div class="lzy_cardBody">'
+                        + '<span class="lzy_tag">' + lzy_escapeHtml(lzy_product.category) + '</span>'
+                        + '<h3 class="lzy_name">' + lzy_escapeHtml(lzy_product.title) + '</h3>'
+                        + '<div class="lzy_priceRow">'
+                        + '<strong class="lzy_price">$' + lzy_product.price.toFixed(2) + '</strong>'
+                        + '<span class="lzy_rating">★ ' + lzy_product.rating.rate.toFixed(1) + '</span>'
+                        + '</div>'
+                        + '<div class="lzy_more"><span>' + lzy_product.rating.count + ' 条评价</span><span>Fake Store</span></div>'
+                        + '</div>'
+                        + '</div>';
+                });
+                lzy_grid.innerHTML = lzy_html;
+
+                lzy_status.textContent = "加载成功 · 共 " + lzy_products.length + " 件商品 · 耗时 " + (Date.now() - lzy_startTime) + " ms";
+                lzy_status.className = "lzy_status lzy_success";
+            } catch (lzy_error) {
+                lzy_grid.innerHTML = '<div class="lzy_empty">商品列表加载失败，请点击“刷新列表”重试。</div>';
+                lzy_status.textContent = "加载失败：" + lzy_error.message;
+                lzy_status.className = "lzy_status lzy_error";
+            } finally {
+                lzy_reloadBtn.disabled = false;
+            }
+        }
+
+        lzy_reloadBtn.addEventListener("click", lzy_loadProducts);
+        lzy_loadProducts();
+    </script>
+</body>
+</html>

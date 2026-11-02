@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-2 fetch 获取接口数据</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f4f7f6;
+            color: #1f2a27;
+            line-height: 1.6;
+        }
+        .lzy_header {
+            background: linear-gradient(135deg, #0d3b30 0%, #14765d 55%, #17b78a 100%);
+            color: #fff;
+            padding: 46px 24px 42px;
+        }
+        .lzy_headerInner {
+            max-width: 880px;
+            margin: 0 auto;
+        }
+        .lzy_badge {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 2px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background-color: rgba(255, 255, 255, 0.16);
+            margin-bottom: 14px;
+        }
+        .lzy_header h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+        .lzy_sub {
+            margin-top: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.78);
+        }
+        .lzy_main {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 28px 24px 60px;
+        }
+        .lzy_card {
+            background-color: #fff;
+            border-radius: 18px;
+            padding: 26px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(23, 43, 38, 0.06);
+        }
+        .lzy_cardTitle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 17px;
+            color: #14251f;
+        }
+        .lzy_cardTitle::before {
+            content: "";
+            width: 4px;
+            height: 18px;
+            border-radius: 2px;
+            background-color: #17b78a;
+        }
+        .lzy_api {
+            display: block;
+            background-color: #f2faf7;
+            border: 1px dashed #c9e9dc;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #14765d;
+            word-break: break-all;
+        }
+        .lzy_toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .lzy_btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #17b78a 0%, #0f8f6d 100%);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(23, 183, 138, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lzy_btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(23, 183, 138, 0.38);
+        }
+        .lzy_btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .lzy_status {
+            font-size: 13px;
+            color: #8a9a94;
+        }
+        .lzy_status.lzy_success {
+            color: #14765d;
+        }
+        .lzy_status.lzy_error {
+            color: #d64545;
+        }
+        .lzy_quoteBox {
+            position: relative;
+            min-height: 150px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f4fbf8 0%, #eaf7f1 100%);
+            padding: 26px 24px 22px;
+        }
+        .lzy_quoteBox::before {
+            content: "“";
+            position: absolute;
+            left: 16px;
+            top: 2px;
+            font-size: 56px;
+            line-height: 1;
+            color: rgba(23, 183, 138, 0.25);
+            font-family: Georgia, serif;
+        }
+        .lzy_quote {
+            position: relative;
+            font-size: 18px;
+            color: #1e2a27;
+            letter-spacing: 0.3px;
+        }
+        .lzy_author {
+            margin-top: 14px;
+            text-align: right;
+            font-size: 14px;
+            color: #6b7c76;
+        }
+        .lzy_meta {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 12px;
+            color: #8a9a94;
+        }
+        .lzy_meta span {
+            background-color: #fff;
+            border-radius: 999px;
+            padding: 4px 12px;
+            border: 1px solid #e4efeb;
+        }
+        .lzy_raw {
+            margin-top: 6px;
+            border-top: 1px solid #eef2f0;
+            padding-top: 12px;
+        }
+        .lzy_raw summary {
+            cursor: pointer;
+            font-size: 13px;
+            color: #14765d;
+            outline: none;
+        }
+        .lzy_code {
+            margin-top: 12px;
+            background-color: #0f1f1a;
+            color: #bfe9d9;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre;
+            overflow: auto;
+            max-height: 260px;
+        }
+        @media (max-width: 600px) {
+            .lzy_header {
+                padding: 34px 18px 30px;
+            }
+            .lzy_header h1 {
+                font-size: 22px;
+            }
+            .lzy_main {
+                padding: 20px 16px 48px;
+            }
+            .lzy_card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17-2 fetch 获取接口数据 -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">FETCH DEMO</span>
+            <h1>fetch 获取接口数据</h1>
+            <p class="lzy_sub">使用原生 fetch 请求一个支持跨域的接口，并把返回的 JSON 数据展示在页面中</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_card">
+            <h2 class="lzy_cardTitle">接口信息</h2>
+            <code class="lzy_api">GET https://dummyjson.com/quotes/random</code>
+            <p class="lzy_hint" style="margin-top: 10px; font-size: 13px; color: #8a9a94;">
+                该接口返回随机一条名言，包含 id、quote、author 三个字段，服务器已允许跨域访问。
+            </p>
+        </section>
+
+        <section class="lzy_card">
+            <h2 class="lzy_cardTitle">返回的数据</h2>
+            <div class="lzy_toolbar">
+                <button class="lzy_btn" id="lzy_reload" type="button">再取一条</button>
+                <span class="lzy_status" id="lzy_status">准备请求…</span>
+            </div>
+            <div class="lzy_quoteBox">
+                <p class="lzy_quote" id="lzy_quote">点击“再取一条”开始请求接口</p>
+                <p class="lzy_author" id="lzy_author">— 等待数据</p>
+                <div class="lzy_meta">
+                    <span>数据 ID：<b id="lzy_id">-</b></span>
+                    <span>请求耗时：<b id="lzy_time">-</b></span>
+                </div>
+            </div>
+            <details class="lzy_raw">
+                <summary>查看接口返回的原始 JSON</summary>
+                <pre class="lzy_code" id="lzy_raw">-</pre>
+            </details>
+        </section>
+    </main>
+
+    <script>
+        var lzy_apiUrl = "https://dummyjson.com/quotes/random";
+        var lzy_reloadBtn = document.getElementById("lzy_reload");
+        var lzy_status = document.getElementById("lzy_status");
+
+        // 加载数据：fetch → 判断响应状态 → 解析 JSON → 渲染
+        async function lzy_loadData() {
+            lzy_reloadBtn.disabled = true;
+            lzy_status.textContent = "正在请求接口…";
+            lzy_status.className = "lzy_status";
+
+            var lzy_startTime = Date.now();
+            try {
+                // cache: "no-store" 确保每次拿到最新数据，不会被浏览器缓存
+                var lzy_response = await fetch(lzy_apiUrl, { cache: "no-store" });
+                if (!lzy_response.ok) {
+                    throw new Error("HTTP 状态码 " + lzy_response.status);
+                }
+                var lzy_data = await lzy_response.json();
+
+                document.getElementById("lzy_quote").textContent = lzy_data.quote;
+                document.getElementById("lzy_author").textContent = "— " + lzy_data.author;
+                document.getElementById("lzy_id").textContent = lzy_data.id;
+                document.getElementById("lzy_time").textContent = (Date.now() - lzy_startTime) + " ms";
+                document.getElementById("lzy_raw").textContent = JSON.stringify(lzy_data, null, 2);
+
+                lzy_status.textContent = "请求成功 · HTTP " + lzy_response.status;
+                lzy_status.className = "lzy_status lzy_success";
+            } catch (lzy_error) {
+                document.getElementById("lzy_quote").textContent = "数据获取失败，请检查网络后重试";
+                document.getElementById("lzy_author").textContent = "— 请求未完成";
+                document.getElementById("lzy_id").textContent = "-";
+                document.getElementById("lzy_time").textContent = "-";
+                document.getElementById("lzy_raw").textContent = String(lzy_error);
+                lzy_status.textContent = "请求失败：" + lzy_error.message;
+                lzy_status.className = "lzy_status lzy_error";
+            } finally {
+                lzy_reloadBtn.disabled = false;
+            }
+        }
+
+        lzy_reloadBtn.addEventListener("click", lzy_loadData);
+        // 页面打开后自动请求一次
+        lzy_loadData();
+    </script>
+</body>
+</html>

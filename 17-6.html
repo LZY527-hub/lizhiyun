@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-6 Promise 包饺子流程</title>
+    <link rel="stylesheet" href="./17-api.css">
+    <style>
+        .lzy_progressWrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .lzy_progress {
+            flex: 1;
+            height: 8px;
+            border-radius: 999px;
+            background-color: #eaf2ef;
+            overflow: hidden;
+        }
+        .lzy_progressBar {
+            display: block;
+            width: 0;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #17b78a 0%, #0f8f6d 100%);
+            transition: width 0.35s ease;
+        }
+        .lzy_progressText {
+            font-size: 12px;
+            color: #8a9a94;
+            white-space: nowrap;
+        }
+        .lzy_flowGrid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        .lzy_step {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 1px solid #e8f1ed;
+            border-radius: 14px;
+            background-color: #f9fcfb;
+            transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .lzy_stepNo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background-color: #eef4f2;
+            color: #8a9a94;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .lzy_stepMain {
+            flex: 1;
+            min-width: 0;
+        }
+        .lzy_stepMain h3 {
+            font-size: 15px;
+            color: #1e2a27;
+        }
+        .lzy_stepMain p {
+            margin-top: 2px;
+            font-size: 12px;
+            color: #8a9a94;
+        }
+        .lzy_stepBadge {
+            flex-shrink: 0;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background-color: #eef4f2;
+            color: #8a9a94;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        /* 进行中 */
+        .lzy_step.lzy_stepOn {
+            border-color: #17b78a;
+            background-color: #f2fbf7;
+            box-shadow: 0 0 0 3px rgba(23, 183, 138, 0.08);
+        }
+        .lzy_stepOn .lzy_stepNo {
+            background-color: #17b78a;
+            color: #fff;
+        }
+        .lzy_stepOn .lzy_stepBadge {
+            background-color: #e6f8f0;
+            color: #0f8f6d;
+        }
+        /* 已完成 */
+        .lzy_step.lzy_stepDone {
+            border-color: #d7ede4;
+            background-color: #fbfefd;
+        }
+        .lzy_stepDone .lzy_stepNo {
+            background-color: #e6f8f0;
+            color: #0f8f6d;
+        }
+        .lzy_stepDone .lzy_stepBadge {
+            background-color: #17b78a;
+            color: #fff;
+        }
+        .lzy_log {
+            height: 270px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background-color: #0f1f1a;
+            color: #bfe9d9;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.9;
+            overflow-y: auto;
+        }
+        .lzy_logLine {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .lzy_logLine.lzy_logStart {
+            color: #8fd9c0;
+        }
+        .lzy_logLine.lzy_logDone {
+            color: #d8ffee;
+        }
+        .lzy_logLine.lzy_logKey {
+            color: #ffd479;
+        }
+        .lzy_notes {
+            display: grid;
+            gap: 10px;
+            list-style: none;
+            font-size: 13px;
+            color: #6b7c76;
+        }
+        .lzy_notes li {
+            position: relative;
+            padding-left: 18px;
+        }
+        .lzy_notes li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 9px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #17b78a;
+        }
+        .lzy_notes b {
+            color: #14765d;
+        }
+        @media (max-width: 820px) {
+            .lzy_flowGrid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .lzy_step {
+                padding: 12px;
+            }
+            .lzy_log {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17-6 Promise 包饺子流程 -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">PROMISE DEMO</span>
+            <h1>Promise 包饺子流程</h1>
+            <p class="lzy_sub">用 Promise + async/await 模拟包饺子：Promise.race 抢采购，Promise.all 等和面与和馅</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_panel">
+            <div class="lzy_toolbar" style="margin-bottom: 14px;">
+                <span class="lzy_status" id="lzy_status">准备开始，点击“开始演示”启动流程</span>
+                <button class="lzy_btn" id="lzy_start" type="button">开始演示</button>
+            </div>
+            <div class="lzy_progressWrap">
+                <div class="lzy_progress">
+                    <span class="lzy_progressBar" id="lzy_progressBar"></span>
+                </div>
+                <span class="lzy_progressText" id="lzy_progressText">0 / 7</span>
+            </div>
+
+            <div class="lzy_flowGrid">
+                <div class="lzy_step" id="lzy_step_buy">
+                    <span class="lzy_stepNo">1</span>
+                    <div class="lzy_stepMain">
+                        <h3>买原料</h3>
+                        <p>线上 6 秒 / 线下 4 秒，同时进行</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+                <div class="lzy_step" id="lzy_step_take">
+                    <span class="lzy_stepNo">2</span>
+                    <div class="lzy_stepMain">
+                        <h3>取原料</h3>
+                        <p>预计 2 秒</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+                <div class="lzy_step" id="lzy_step_dough">
+                    <span class="lzy_stepNo">3</span>
+                    <div class="lzy_stepMain">
+                        <h3>和面</h3>
+                        <p>预计 3 秒（与和馅并行）</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+                <div class="lzy_step" id="lzy_step_filling">
+                    <span class="lzy_stepNo">4</span>
+                    <div class="lzy_stepMain">
+                        <h3>和馅</h3>
+                        <p>预计 4 秒（与和面并行）</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+                <div class="lzy_step" id="lzy_step_wrap">
+                    <span class="lzy_stepNo">5</span>
+                    <div class="lzy_stepMain">
+                        <h3>包饺子</h3>
+                        <p>预计 5 秒</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+                <div class="lzy_step" id="lzy_step_cook">
+                    <span class="lzy_stepNo">6</span>
+                    <div class="lzy_stepMain">
+                        <h3>煮饺子</h3>
+                        <p>预计 5 秒</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+                <div class="lzy_step" id="lzy_step_eat">
+                    <span class="lzy_stepNo">7</span>
+                    <div class="lzy_stepMain">
+                        <h3>吃饺子</h3>
+                        <p>预计 3 秒</p>
+                    </div>
+                    <span class="lzy_stepBadge">等待</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">执行日志</h2>
+            <div class="lzy_log" id="lzy_log">
+                <div class="lzy_logLine">等待开始…</div>
+            </div>
+        </section>
+
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">用到的 Promise 知识</h2>
+            <ul class="lzy_notes">
+                <li><b>Promise.race</b>：线上、线下采购同时执行，谁先完成就用谁的结果，另一路自动忽略。</li>
+                <li><b>Promise.all</b>：和面、和馅同时执行，两个都完成后才继续包饺子。</li>
+                <li><b>async / await</b>：用接近同步的写法组织异步流程，setTimeout 模拟每一步的耗时。</li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        var lzy_stepIds = {
+            buy: "lzy_step_buy",
+            take: "lzy_step_take",
+            dough: "lzy_step_dough",
+            filling: "lzy_step_filling",
+            wrap: "lzy_step_wrap",
+            cook: "lzy_step_cook",
+            eat: "lzy_step_eat"
+        };
+        var lzy_initialNotes = {
+            buy: "线上 6 秒 / 线下 4 秒，同时进行",
+            take: "预计 2 秒",
+            dough: "预计 3 秒（与和馅并行）",
+            filling: "预计 4 秒（与和面并行）",
+            wrap: "预计 5 秒",
+            cook: "预计 5 秒",
+            eat: "预计 3 秒"
+        };
+        var lzy_stepCount = 7;
+        var lzy_doneCount = 0;
+        var lzy_flowStart = 0;
+        var lzy_isRunning = false;
+        var lzy_startBtn = document.getElementById("lzy_start");
+        var lzy_status = document.getElementById("lzy_status");
+        var lzy_logBox = document.getElementById("lzy_log");
+
+        // 记录相对流程开始的耗时
+        function lzy_elapsed() {
+            return ((Date.now() - lzy_flowStart) / 1000).toFixed(1);
+        }
+
+        // 输出一行执行日志
+        function lzy_log(lzy_message, lzy_type) {
+            var lzy_line = document.createElement("div");
+            lzy_line.className = "lzy_logLine" + (lzy_type ? " lzy_log" + lzy_type : "");
+            lzy_line.textContent = "[+" + lzy_elapsed() + "s] " + lzy_message;
+            lzy_logBox.appendChild(lzy_line);
+            lzy_logBox.scrollTop = lzy_logBox.scrollHeight;
+        }
+
+        // 用 setTimeout 模拟一个耗时任务，返回 Promise
+        function lzy_task(lzy_name, lzy_ms) {
+            return new Promise(function (lzy_resolve) {
+                lzy_log(lzy_name + " 开始，预计 " + (lzy_ms / 1000) + " 秒", "Start");
+                setTimeout(function () {
+                    lzy_log(lzy_name + " 完成（" + (lzy_ms / 1000) + " 秒）", "Done");
+                    lzy_resolve(lzy_name);
+                }, lzy_ms);
+            });
+        }
+
+        function lzy_setStepOn(lzy_key, lzy_note) {
+            var lzy_step = document.getElementById(lzy_stepIds[lzy_key]);
+            lzy_step.className = "lzy_step lzy_stepOn";
+            lzy_step.querySelector(".lzy_stepBadge").textContent = "进行中";
+            lzy_step.querySelector(".lzy_stepMain p").textContent = lzy_note;
+        }
+
+        function lzy_setStepDone(lzy_key, lzy_note) {
+            var lzy_step = document.getElementById(lzy_stepIds[lzy_key]);
+            var lzy_wasDone = lzy_step.className.indexOf("lzy_stepDone") !== -1;
+            lzy_step.className = "lzy_step lzy_stepDone";
+            lzy_step.querySelector(".lzy_stepBadge").textContent = "完成";
+            lzy_step.querySelector(".lzy_stepMain p").textContent = lzy_note;
+            if (!lzy_wasDone) {
+                lzy_doneCount += 1;
+                document.getElementById("lzy_progressBar").style.width = (lzy_doneCount / lzy_stepCount * 100) + "%";
+                document.getElementById("lzy_progressText").textContent = lzy_doneCount + " / " + lzy_stepCount;
+            }
+        }
+
+        function lzy_resetUI() {
+            lzy_doneCount = 0;
+            for (var lzy_key in lzy_stepIds) {
+                var lzy_step = document.getElementById(lzy_stepIds[lzy_key]);
+                lzy_step.className = "lzy_step";
+                lzy_step.querySelector(".lzy_stepBadge").textContent = "等待";
+                lzy_step.querySelector(".lzy_stepMain p").textContent = lzy_initialNotes[lzy_key];
+            }
+            document.getElementById("lzy_progressBar").style.width = "0%";
+            document.getElementById("lzy_progressText").textContent = "0 / " + lzy_stepCount;
+            lzy_logBox.innerHTML = "";
+            lzy_status.textContent = "演示进行中…";
+            lzy_status.className = "lzy_status";
+        }
+
+        // 主流程：用 async/await 串起所有步骤
+        async function lzy_runFlow() {
+            lzy_isRunning = true;
+            lzy_startBtn.disabled = true;
+            lzy_startBtn.textContent = "演示进行中…";
+            lzy_flowStart = Date.now();
+            lzy_log("开始包饺子流程", "Key");
+            lzy_log("Promise.race：线上、线下同时采购，先完成者生效", "Start");
+
+            // 1. 买原料：线上、线下同时进行，谁先完成用谁
+            lzy_setStepOn("buy", "线上、线下同时采购中…");
+            var lzy_onlineTask = lzy_task("线上采购", 6000);
+            var lzy_offlineTask = lzy_task("线下采购", 4000);
+            var lzy_buyResult = await Promise.race([lzy_onlineTask, lzy_offlineTask]);
+            lzy_setStepDone("buy", "采用「" + lzy_buyResult + "」，另一路自动忽略");
+            lzy_log("买原料完成：" + lzy_buyResult + "先完成，进入下一步", "Done");
+
+            // 2. 取原料
+            lzy_setStepOn("take", "正在取原料…");
+            await lzy_task("取原料", 2000);
+            lzy_setStepDone("take", "原料已取到手");
+            lzy_log("取原料完成，准备和面与和馅", "Done");
+
+            // 3. 和面、和馅同时进行，两个都完成才继续
+            lzy_log("Promise.all：和面、和馅同时开始，全部完成才继续", "Start");
+            lzy_setStepOn("dough", "和面进行中…");
+            lzy_setStepOn("filling", "和馅进行中…");
+            var lzy_doughTask = lzy_task("和面", 3000).then(function () {
+                lzy_setStepDone("dough", "面团已和好");
+            });
+            var lzy_fillingTask = lzy_task("和馅", 4000).then(function () {
+                lzy_setStepDone("filling", "馅料已调好");
+            });
+            await Promise.all([lzy_doughTask, lzy_fillingTask]);
+            lzy_log("和面、和馅全部完成，可以包饺子了", "Done");
+
+            // 4. 包饺子
+            lzy_setStepOn("wrap", "正在包饺子…");
+            await lzy_task("包饺子", 5000);
+            lzy_setStepDone("wrap", "饺子已包好");
+            lzy_log("包饺子完成", "Done");
+
+            // 5. 煮饺子
+            lzy_setStepOn("cook", "正在煮饺子…");
+            await lzy_task("煮饺子", 5000);
+            lzy_setStepDone("cook", "饺子已煮熟");
+            lzy_log("煮饺子完成", "Done");
+
+            // 6. 吃饺子
+            lzy_setStepOn("eat", "开吃，认真品尝…");
+            await lzy_task("吃饺子", 3000);
+            lzy_setStepDone("eat", "吃完了，味道不错");
+            lzy_log("吃饺子完成，流程结束", "Key");
+
+            lzy_status.textContent = "流程完成 · 总耗时 " + lzy_elapsed() + " 秒";
+            lzy_status.className = "lzy_status lzy_success";
+            lzy_startBtn.disabled = false;
+            lzy_startBtn.textContent = "重新演示";
+            lzy_isRunning = false;
+        }
+
+        lzy_startBtn.addEventListener("click", function () {
+            if (lzy_isRunning) {
+                return;
+            }
+            lzy_resetUI();
+            lzy_runFlow();
+        });
+    </script>
+</body>
+</html>

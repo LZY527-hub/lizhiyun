@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17 随机狗狗图片</title>
+    <link rel="stylesheet" href="./17-api.css">
+    <style>
+        .lzy_dogFrame {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f2faf7 0%, #e6f5ee 100%);
+            overflow: hidden;
+        }
+        .lzy_dogImg {
+            max-width: 100%;
+            max-height: 560px;
+            object-fit: contain;
+        }
+        .lzy_placeholder {
+            padding: 90px 20px;
+            font-size: 14px;
+            color: #8a9a94;
+            text-align: center;
+        }
+        .lzy_dogMeta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .lzy_chip {
+            font-size: 12px;
+            color: #14765d;
+            background-color: #f2faf7;
+            border: 1px solid #dff3ea;
+            border-radius: 999px;
+            padding: 5px 12px;
+            text-transform: capitalize;
+        }
+        .lzy_imgUrl {
+            font-size: 12px;
+            color: #8a9a94;
+            word-break: break-all;
+            flex: 1;
+            min-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17 随机狗狗图片（dog.ceo） -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">DOG API</span>
+            <h1>随机狗狗图片</h1>
+            <p class="lzy_sub">调用 dog.ceo 接口，每次返回一张随机品种的狗狗图片</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_panel">
+            <h2 class="lzy_panelTitle">接口信息</h2>
+            <code class="lzy_api">GET https://dog.ceo/api/breeds/image/random</code>
+            <p class="lzy_hint">返回字段 message 是图片地址，status 为 success 表示请求成功。</p>
+        </section>
+
+        <section class="lzy_panel">
+            <div class="lzy_toolbar">
+                <span class="lzy_status" id="lzy_status">正在请求接口…</span>
+                <button class="lzy_btn" id="lzy_reload" type="button">换一张</button>
+            </div>
+            <div class="lzy_dogFrame">
+                <img class="lzy_dogImg" id="lzy_dogImg" alt="随机狗狗图片" hidden>
+                <p class="lzy_placeholder" id="lzy_placeholder">正在加载狗狗图片…</p>
+            </div>
+            <div class="lzy_dogMeta">
+                <span class="lzy_chip" id="lzy_breed">品种：-</span>
+                <span class="lzy_imgUrl" id="lzy_imgUrl">-</span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var lzy_apiUrl = "https://dog.ceo/api/breeds/image/random";
+        var lzy_reloadBtn = document.getElementById("lzy_reload");
+        var lzy_status = document.getElementById("lzy_status");
+        var lzy_dogImg = document.getElementById("lzy_dogImg");
+        var lzy_placeholder = document.getElementById("lzy_placeholder");
+
+        // 从图片地址中解析品种，例如 .../breeds/hound-afghan/xxx.jpg
+        function lzy_parseBreed(lzy_url) {
+            var lzy_match = lzy_url.match(/\/breeds\/([^/]+)\//);
+            if (!lzy_match) {
+                return "未知品种";
+            }
+            return lzy_match[1].replace(/-/g, " ");
+        }
+
+        async function lzy_loadDog() {
+            lzy_reloadBtn.disabled = true;
+            lzy_status.textContent = "正在请求接口…";
+            lzy_status.className = "lzy_status";
+            lzy_dogImg.hidden = true;
+            lzy_placeholder.hidden = false;
+            lzy_placeholder.textContent = "正在加载狗狗图片…";
+
+            var lzy_startTime = Date.now();
+            try {
+                var lzy_response = await fetch(lzy_apiUrl, { cache: "no-store" });
+                if (!lzy_response.ok) {
+                    throw new Error("HTTP 状态码 " + lzy_response.status);
+                }
+                var lzy_data = await lzy_response.json();
+                if (lzy_data.status !== "success") {
+                    throw new Error("接口状态：" + lzy_data.status);
+                }
+
+                lzy_dogImg.src = lzy_data.message;
+                lzy_dogImg.hidden = false;
+                lzy_placeholder.hidden = true;
+                document.getElementById("lzy_breed").textContent = "品种：" + lzy_parseBreed(lzy_data.message);
+                document.getElementById("lzy_imgUrl").textContent = lzy_data.message;
+
+                lzy_status.textContent = "请求成功 · HTTP " + lzy_response.status + " · 耗时 " + (Date.now() - lzy_startTime) + " ms";
+                lzy_status.className = "lzy_status lzy_success";
+            } catch (lzy_error) {
+                lzy_dogImg.hidden = true;
+                lzy_placeholder.hidden = false;
+                lzy_placeholder.textContent = "图片获取失败，请稍后重试";
+                document.getElementById("lzy_breed").textContent = "品种：-";
+                document.getElementById("lzy_imgUrl").textContent = "-";
+                lzy_status.textContent = "请求失败：" + lzy_error.message;
+                lzy_status.className = "lzy_status lzy_error";
+            } finally {
+                lzy_reloadBtn.disabled = false;
+            }
+        }
+
+        lzy_reloadBtn.addEventListener("click", lzy_loadDog);
+        lzy_loadDog();
+    </script>
+</body>
+</html>

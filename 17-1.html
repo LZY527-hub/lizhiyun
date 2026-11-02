@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-1 JSON 数据展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f4f7f6;
+            color: #1f2a27;
+            line-height: 1.6;
+        }
+        .lzy_header {
+            background: linear-gradient(135deg, #0d3b30 0%, #14765d 55%, #17b78a 100%);
+            color: #fff;
+            padding: 46px 24px 42px;
+        }
+        .lzy_headerInner {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+        .lzy_badge {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 2px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background-color: rgba(255, 255, 255, 0.16);
+            margin-bottom: 14px;
+        }
+        .lzy_header h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+        .lzy_sub {
+            margin-top: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.78);
+        }
+        .lzy_main {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 28px 24px 60px;
+        }
+        .lzy_section {
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 24px rgba(23, 43, 38, 0.06);
+        }
+        .lzy_sectionTitle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            font-size: 17px;
+            color: #14251f;
+        }
+        .lzy_sectionTitle::before {
+            content: "";
+            width: 4px;
+            height: 18px;
+            border-radius: 2px;
+            background-color: #17b78a;
+        }
+        .lzy_hint {
+            font-size: 13px;
+            color: #8a9a94;
+            margin-bottom: 14px;
+        }
+        .lzy_code {
+            background-color: #0f1f1a;
+            color: #bfe9d9;
+            border-radius: 12px;
+            padding: 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.75;
+            white-space: pre;
+            overflow: auto;
+            max-height: 380px;
+        }
+        .lzy_summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .lzy_summaryItem {
+            flex: 1;
+            min-width: 140px;
+            background-color: #f2faf7;
+            border: 1px solid #dff3ea;
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+        .lzy_summaryItem span {
+            display: block;
+            font-size: 12px;
+            color: #82938c;
+        }
+        .lzy_summaryItem strong {
+            font-size: 20px;
+            color: #14765d;
+        }
+        .lzy_tableWrap {
+            overflow-x: auto;
+        }
+        .lzy_table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .lzy_table th,
+        .lzy_table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eef2f0;
+        }
+        .lzy_table th {
+            font-size: 13px;
+            font-weight: normal;
+            color: #8a9a94;
+            background-color: #f8fbfa;
+        }
+        .lzy_table tbody tr:hover td {
+            background-color: #f6fbf9;
+        }
+        @media (max-width: 600px) {
+            .lzy_header {
+                padding: 34px 18px 30px;
+            }
+            .lzy_header h1 {
+                font-size: 22px;
+            }
+            .lzy_main {
+                padding: 20px 16px 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：李知芸  日期：2026-11-02  功能名称：17-1 JSON 数据展示 -->
+
+    <header class="lzy_header">
+        <div class="lzy_headerInner">
+            <span class="lzy_badge">JSON DEMO</span>
+            <h1>JSON 数据展示</h1>
+            <p class="lzy_sub">把一个 JSON 字符串解析成对象，再格式化输出并渲染成表格</p>
+        </div>
+    </header>
+
+    <main class="lzy_main">
+        <section class="lzy_section">
+            <h2 class="lzy_sectionTitle">格式化后的 JSON</h2>
+            <p class="lzy_hint">使用 JSON.parse() 解析原始字符串，再用 JSON.stringify(数据, null, 2) 缩进格式化，便于阅读。</p>
+            <pre class="lzy_code" id="lzy_jsonView"></pre>
+        </section>
+
+        <section class="lzy_section">
+            <h2 class="lzy_sectionTitle">解析后渲染的数据</h2>
+            <p class="lzy_hint" id="lzy_updateTime"></p>
+            <div class="lzy_summary">
+                <div class="lzy_summaryItem">
+                    <span>课程数量</span>
+                    <strong id="lzy_count">0</strong>
+                </div>
+                <div class="lzy_summaryItem">
+                    <span>总时长（分钟）</span>
+                    <strong id="lzy_duration">0</strong>
+                </div>
+                <div class="lzy_summaryItem">
+                    <span>预计总消耗（千卡）</span>
+                    <strong id="lzy_calories">0</strong>
+                </div>
+            </div>
+            <div class="lzy_tableWrap">
+                <table class="lzy_table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>课程名称</th>
+                            <th>教练</th>
+                            <th>时长（分钟）</th>
+                            <th>难度</th>
+                            <th>消耗（千卡）</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lzy_courseBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 原始 JSON 字符串（模拟从接口或文件拿到的数据）
+        var lzy_jsonText = '{"planTitle":"秋季健身训练计划","updatedAt":"2026-11-02","courses":[{"id":1,"name":"上肢力量训练","coach":"李教练","duration":45,"level":"中级","calories":320},{"id":2,"name":"核心稳定训练","coach":"王教练","duration":30,"level":"初级","calories":180},{"id":3,"name":"HIIT 燃脂","coach":"赵教练","duration":25,"level":"高级","calories":400},{"id":4,"name":"下肢力量训练","coach":"李教练","duration":50,"level":"中级","calories":360}]}';
+
+        // 1. 解析 JSON 字符串 —— JSON.parse()
+        var lzy_data = JSON.parse(lzy_jsonText);
+
+        // 2. 格式化输出 —— JSON.stringify(数据, null, 2)
+        document.getElementById("lzy_jsonView").textContent = JSON.stringify(lzy_data, null, 2);
+
+        // 3. 把解析后的数据渲染到页面
+        document.getElementById("lzy_updateTime").textContent = lzy_data.planTitle + " · 更新于 " + lzy_data.updatedAt;
+        document.getElementById("lzy_count").textContent = lzy_data.courses.length;
+
+        var lzy_totalDuration = 0;
+        var lzy_totalCalories = 0;
+        var lzy_rows = "";
+        lzy_data.courses.forEach(function (lzy_course) {
+            lzy_totalDuration += lzy_course.duration;
+            lzy_totalCalories += lzy_course.calories;
+            lzy_rows += "<tr>"
+                + "<td>" + lzy_course.id + "</td>"
+                + "<td>" + lzy_course.name + "</td>"
+                + "<td>" + lzy_course.coach + "</td>"
+                + "<td>" + lzy_course.duration + "</td>"
+                + "<td>" + lzy_course.level + "</td>"
+                + "<td>" + lzy_course.calories + "</td>"
+                + "</tr>";
+        });
+        document.getElementById("lzy_courseBody").innerHTML = lzy_rows;
+        document.getElementById("lzy_duration").textContent = lzy_totalDuration;
+        document.getElementById("lzy_calories").textContent = lzy_totalCalories;
+    </script>
+</body>
+</html>
