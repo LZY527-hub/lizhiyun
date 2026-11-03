@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：10-1 纯CSS动画 -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>527李知芸 · 纯CSS动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #eef2f7;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        .lzy_box {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
+            position: relative;
+            animation: lzyColorChange 9s ease-in-out infinite, lzyFloat 4s ease-in-out infinite, lzyRotateBox 9s linear infinite;
+        }
+
+        .lzy_box::before {
+            content: "";
+            position: absolute;
+            inset: -18px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.32);
+            filter: blur(20px);
+            z-index: -1;
+            animation: lzyGlow 9s ease-in-out infinite;
+        }
+
+        @keyframes lzyColorChange {
+            0% {
+                background: #f97316;
+            }
+            25% {
+                background: #a855f7;
+            }
+            50% {
+                background: #22d3ee;
+            }
+            75% {
+                background: #f43f5e;
+            }
+            100% {
+                background: #f97316;
+            }
+        }
+
+        @keyframes lzyFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-24px);
+            }
+        }
+
+        @keyframes lzyRotateBox {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.12);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
+        }
+
+        @keyframes lzyGlow {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.9);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lzy_box"></div>
+</body>
+</html>

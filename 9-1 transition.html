@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：9-1 transition 图片过渡 -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>527李知芸 · 图片过渡</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #ffffff;
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .lzy_title {
+            flex: none;
+            margin: 0;
+            padding: 8px 0 8px 12px;
+            font-size: clamp(30px, 4vw, 46px);
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #000000;
+        }
+
+        .lzy_gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .lzy_item {
+            position: relative;
+            margin: 0;
+            overflow: hidden;
+            border-radius: 0;
+            background: #f1f5f9;
+            cursor: pointer;
+        }
+
+        .lzy_item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+
+        .lzy_item:hover img {
+            transform: scale(1.08);
+            filter: brightness(1.12) saturate(1.1);
+        }
+
+        .lzy_tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            font-size: 12px;
+            letter-spacing: 1px;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .lzy_item:hover .lzy_tag {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .lzy_caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 8px;
+            text-align: center;
+            color: #ffffff;
+            font-size: clamp(16px, 2vw, 20px);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+            transition: transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .lzy_item:hover .lzy_caption {
+            transform: translateY(-4px);
+        }
+
+        @media (max-width: 860px) {
+            body {
+                height: auto;
+                overflow: visible;
+            }
+
+            .lzy_gallery {
+                grid-template-columns: repeat(2, 1fr);
+                flex: none;
+            }
+
+            .lzy_item {
+                height: 40vh;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .lzy_gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .lzy_item {
+                height: 32vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="lzy_title">transition过渡</h1>
+    <div class="lzy_gallery">
+        <figure class="lzy_item">
+            <img src="img/s1.png" alt="李知芸的图片过渡示例一：持刀与盾牌的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s2.png" alt="李知芸的图片过渡示例二：手持菜刀的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s3.png" alt="李知芸的图片过渡示例三：攻击方与防守方四格图">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s4.png" alt="李知芸的图片过渡示例四：戴眼镜背书包的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s1.png" alt="李知芸的图片过渡示例五：持刀与盾牌的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s2.png" alt="李知芸的图片过渡示例六：手持菜刀的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s3.png" alt="李知芸的图片过渡示例七：攻击方与防守方四格图">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s4.png" alt="李知芸的图片过渡示例八：戴眼镜背书包的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+        <figure class="lzy_item">
+            <img src="img/s1.png" alt="李知芸的图片过渡示例九：持刀与盾牌的柴犬">
+            <span class="lzy_tag">图片处理</span>
+            <figcaption class="lzy_caption">李知芸的标题</figcaption>
+        </figure>
+    </div>
+</body>
+</html>

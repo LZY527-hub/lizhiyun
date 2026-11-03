@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：课堂实践成果首页视觉升级 -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,8 @@
 <style>
     :root{
         --bg:#05060b;
-        --ink:#eef1f8;
-        --muted:#8b94a9;
+        --ink:#ffffff;
+        --muted:#b4bed2;
         --c1:#6d7cff;
         --c2:#5fd8c8;
         --border:rgba(255,255,255,.08);
@@ -17,15 +18,34 @@
     }
     *{box-sizing:border-box;}
     html,body{margin:0;padding:0;}
+    html{scroll-behavior:smooth;scroll-padding-top:96px;}
     body{
         font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
         color:var(--ink);
-        background:linear-gradient(180deg,#05060b 0%,#080a12 100%);
+        background:
+            radial-gradient(900px 720px at 12% 6%, rgba(4,6,14,.74) 0%, rgba(4,6,14,0) 72%),
+            linear-gradient(180deg, rgba(4,6,14,.34) 0%, rgba(4,6,14,.78) 62%, #05060b 100%),
+            url("img/indexBg2.jpg") center / cover no-repeat fixed;
         min-height:100vh;
         line-height:1.6;
         -webkit-font-smoothing:antialiased;
         text-rendering:optimizeLegibility;
         overflow-x:hidden;
+        position:relative;
+    }
+    /* 极淡网格背景 + 右上角淡紫光晕 */
+    body::before{
+        content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+        background-image:
+            linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+        background-size:48px 48px;
+    }
+    body::after{
+        content:"";position:fixed;top:-160px;right:-120px;
+        width:680px;height:680px;border-radius:50%;
+        background:radial-gradient(circle,rgba(196,181,253,.18) 0%,transparent 62%);
+        filter:blur(30px);pointer-events:none;z-index:0;
     }
     /* 背景微光 */
     .glow{position:fixed;border-radius:50%;filter:blur(95px);pointer-events:none;z-index:0;}
@@ -62,7 +82,7 @@
     .wrap{
         position:relative;z-index:1;
         max-width:1140px;margin:0 auto;
-        padding:88px 32px 80px;
+        padding:118px 32px 80px;
     }
 
     /* ===== Hero ===== */
@@ -85,21 +105,27 @@
         line-height:1.06;
         font-weight:800;
         letter-spacing:.5px;
+        text-shadow:0 6px 38px rgba(0,0,0,.65);
     }
     .hero h1 span{display:block;}
     .hero h1 .solid{
-        background:linear-gradient(94deg,#ffffff 0%,#ccd3ff 55%,#9ff0e8 100%);
+        background:linear-gradient(94deg,#ffffff 10%,#c4b5fd 100%);
         -webkit-background-clip:text;background-clip:text;
         -webkit-text-fill-color:transparent;color:transparent;
     }
     .hero h1 .outline{
         color:rgba(255,255,255,.12);
-        -webkit-text-stroke:1.2px rgba(255,255,255,.55);
+        -webkit-text-stroke:1.2px rgba(196,181,253,.55);
         -webkit-text-fill-color:transparent;
     }
     .hero-side{
-        padding-left:28px;
-        border-left:1px solid var(--border);
+        padding:26px 28px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:16px;
+        background:rgba(255,255,255,.04);
+        backdrop-filter:blur(12px) saturate(140%);
+        -webkit-backdrop-filter:blur(12px) saturate(140%);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 20px 40px -30px rgba(0,0,0,.8);
     }
     .hero-side .meta{
         margin:0 0 22px;
@@ -116,15 +142,26 @@
         line-height:1.9;
     }
 
-    /* ===== 行式导航列表 ===== */
+    /* ===== 入场动效 ===== */
+    @keyframes lzyRise{
+        from{opacity:0;transform:translateY(20px);}
+        to{opacity:1;transform:translateY(0);}
+    }
+    .hero-left{animation:lzyRise .8s cubic-bezier(.2,.7,.2,1) backwards;}
+    .hero-side{animation:lzyRise .8s cubic-bezier(.2,.7,.2,1) .12s backwards;}
+
+    /* ===== 实践成果网格卡片 ===== */
     .list{
-        border-top:1px solid var(--border);
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:16px;
     }
     .chapter{
+        grid-column:1 / -1;
         display:flex;
         align-items:center;
         gap:14px;
-        padding:48px 14px 18px;
+        padding:40px 4px 6px;
         font-size:11px;
         letter-spacing:3px;
         text-transform:uppercase;
@@ -138,45 +175,71 @@
         background:linear-gradient(90deg,var(--border),transparent);
     }
     .item{
-        display:grid;
-        grid-template-columns:64px 1fr auto 44px;
-        align-items:center;
-        gap:24px;
-        padding:30px 14px;
-        border-bottom:1px solid var(--border);
+        display:flex;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+        padding:16px 18px 40px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:12px;
+        background:rgba(255,255,255,.04);
         text-decoration:none;
         color:inherit;
         position:relative;
-        transition:background .3s ease,padding-left .3s ease;
+        overflow:hidden;
+        animation:lzyRise .6s cubic-bezier(.2,.7,.2,1) backwards;
+        animation-delay:var(--lzy_delay,0s);
+        transition:background .3s ease,border-color .3s ease,transform .3s ease,box-shadow .3s ease;
+    }
+    /* 悬停时的蓝紫渐变描边 */
+    .item::before{
+        content:"";
+        position:absolute;inset:0;
+        border-radius:12px;
+        padding:1px;
+        background:linear-gradient(135deg,var(--c1) 0%,#c4b5fd 55%,var(--c2) 100%);
+        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+        mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+        -webkit-mask-composite:xor;
+        mask-composite:exclude;
+        opacity:0;
+        transition:opacity .3s ease;
+        pointer-events:none;
     }
     .item::after{
         content:"";
-        position:absolute;left:0;bottom:-1px;
-        width:0;height:1px;
+        position:absolute;left:0;bottom:0;
+        width:0;height:2px;
         background:linear-gradient(90deg,var(--c1),var(--c2));
-        transition:width .4s ease;
+        transition:width .3s ease;
     }
-    .item:hover{background:var(--glass-hover);padding-left:28px;}
+    .item:hover{
+        transform:translateY(-4px);
+        background:rgba(255,255,255,.06);
+        border-color:transparent;
+        box-shadow:0 18px 34px -22px rgba(109,124,255,.55);
+    }
+    .item:hover::before{opacity:1;}
     .item:hover::after{width:100%;}
     .idx{
         font-family:ui-monospace,"SF Mono","Consolas",monospace;
-        font-size:13px;letter-spacing:2px;
-        background:linear-gradient(90deg,var(--c1),var(--c2));
-        -webkit-background-clip:text;background-clip:text;
-        -webkit-text-fill-color:transparent;color:transparent;
+        font-size:48px;font-weight:800;line-height:.95;letter-spacing:1px;
+        color:transparent;
+        -webkit-text-stroke:1px rgba(255,255,255,.25);
+        margin-bottom:2px;
     }
     .ttl{
-        font-size:26px;font-weight:600;letter-spacing:.5px;
+        font-size:19px;font-weight:600;letter-spacing:.5px;
+        transition:color .3s ease;
+    }
+    .item:hover .ttl{color:#c4b5fd;}
+    .desc{font-size:12.5px;color:var(--muted);text-align:left;}
+    .go{
+        position:absolute;right:16px;top:16px;
+        font-size:17px;color:rgba(255,255,255,.35);
         transition:color .3s ease,transform .3s ease;
     }
-    .item:hover .ttl{color:var(--c2);transform:translateX(4px);}
-    .desc{font-size:13.5px;color:var(--muted);text-align:right;}
-    .go{
-        font-size:20px;color:var(--c2);
-        opacity:0;transform:translateX(-8px);
-        transition:opacity .3s ease,transform .3s ease;
-    }
-    .item:hover .go{opacity:1;transform:translateX(0);}
+    .item:hover .go{color:#c4b5fd;transform:translateX(4px) rotate(-45deg);}
 
     /* ===== 信息卡片 ===== */
     .prompt{
@@ -211,19 +274,74 @@
 
     footer{margin-top:58px;text-align:center;color:var(--muted);font-size:12.5px;letter-spacing:1px;}
 
+    /* ===== 顶部毛玻璃导航 ===== */
+    .lzy_topbar{
+        position:fixed;top:0;left:0;right:0;z-index:100;
+        background:rgba(5,6,11,.55);
+        border-bottom:1px solid rgba(255,255,255,.08);
+        backdrop-filter:blur(12px) saturate(140%);
+        -webkit-backdrop-filter:blur(12px) saturate(140%);
+    }
+    .lzy_topbar_inner{
+        max-width:1140px;margin:0 auto;padding:0 32px;
+        height:58px;display:flex;align-items:center;justify-content:space-between;gap:24px;
+    }
+    .lzy_logo{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:11px;font-weight:600;letter-spacing:4px;
+        color:var(--ink);text-decoration:none;white-space:nowrap;
+    }
+    .lzy_navlinks{display:flex;align-items:center;gap:26px;}
+    .lzy_navlinks a{
+        position:relative;font-size:12.5px;letter-spacing:1px;
+        color:var(--muted);text-decoration:none;
+        transition:color .25s ease;
+    }
+    .lzy_navlinks a::after{
+        content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
+        background:linear-gradient(90deg,var(--c1),#c4b5fd);
+        transform:scaleX(0);transform-origin:left;
+        transition:transform .25s ease;
+    }
+    .lzy_navlinks a:hover{color:var(--ink);}
+    .lzy_navlinks a:hover::after{transform:scaleX(1);}
+
     @media (max-width:860px){
         .hero{grid-template-columns:1fr;gap:32px;}
-        .hero-side{border-left:0;padding-left:0;}
-        .desc{display:none;}
-        .item{grid-template-columns:52px 1fr 40px;}
+        .hero-side{padding:22px 24px;}
+        .list{grid-template-columns:repeat(2,1fr);}
+        .item{padding:16px 16px 36px;}
+    }
+    @media (max-width:640px){
+        .lzy_topbar_inner{padding:0 20px;gap:16px;}
+        .lzy_navlinks{gap:14px;}
+        .lzy_navlinks a{font-size:11.5px;}
     }
     @media (max-width:520px){
-        .wrap{padding:60px 20px 56px;}
+        .wrap{padding:92px 20px 56px;}
         .ttl{font-size:21px;}
+        .idx{font-size:40px;}
+        .list{grid-template-columns:1fr;}
+    }
+    @media (prefers-reduced-motion:reduce){
+        .hero-left,.hero-side,.item{animation:none;}
+        html{scroll-behavior:auto;}
     }
 </style>
 </head>
 <body>
+    <header class="lzy_topbar">
+        <div class="lzy_topbar_inner">
+            <a class="lzy_logo" href="#lzy_home">PORTFOLIO</a>
+            <nav class="lzy_navlinks" aria-label="页内导航">
+                <a href="#lzy_home">个人主页</a>
+                <a href="#lzy_html">HTML</a>
+                <a href="#lzy_css">CSS</a>
+                <a href="#lzy_anim">动画</a>
+                <a href="#lzy_about">关于</a>
+            </nav>
+        </div>
+    </header>
     <canvas id="particles"></canvas>
     <div class="glow glow-1"></div>
     <div class="glow glow-2"></div>
@@ -231,7 +349,7 @@
     <div class="watermark">527</div>
 
     <div class="wrap">
-        <header class="hero">
+        <header class="hero" id="lzy_home">
             <div class="hero-left">
                 <span class="eyebrow">Portfolio · Advanced Web Design</span>
                 <h1>
@@ -242,7 +360,7 @@
             </div>
             <div class="hero-side">
                 <p class="meta">学号 <b>527</b><br>姓名 <b>李知芸</b><br>班级 <b>计算机24005</b></p>
-                <p class="blurb">十八项课堂实践成果，涵盖 HTML 基础、超链接、表单、CSS 选择器、盒模型、图文排版、长度单位、3D 动画，以及 JSON 数据展示、fetch 接口、定时器与 Promise 异步流程。</p>
+                <p class="blurb">二十七项课堂实践成果，涵盖 HTML 基础、超链接、表单、CSS 选择器、盒模型、图文排版、长度单位、弹性布局、过渡与关键帧动画、3D 动画，以及 JSON 数据展示、fetch 接口、定时器与 Promise 异步流程。</p>
             </div>
         </header>
 
@@ -253,7 +371,7 @@
                 <span class="desc">页面基础结构实践</span>
                 <span class="go">→</span>
             </a>
-            <a class="item" href="2-1.html">
+            <a class="item" href="2-1.html" id="lzy_html">
                 <span class="idx">02</span>
                 <span class="ttl">HTML 元素</span>
                 <span class="desc">开始标签 + 内容 + 结束标记</span>
@@ -271,7 +389,7 @@
                 <span class="desc">HTML 表单元素基本使用</span>
                 <span class="go">→</span>
             </a>
-            <a class="item" href="3-2 css.html">
+            <a class="item" href="3-2 css.html" id="lzy_css">
                 <span class="idx">05</span>
                 <span class="ttl">层叠样式表 CSS</span>
                 <span class="desc">CSS 基础与样式入门</span>
@@ -313,10 +431,67 @@
                 <span class="desc">绝对单位与相对单位演示</span>
                 <span class="go">→</span>
             </a>
-            <a class="item" href="11-3.html">
+            <a class="item" href="11-3.html" id="lzy_anim">
                 <span class="idx">12</span>
                 <span class="ttl">CSS3 3D 动画</span>
                 <span class="desc">3D 变换与动画演示</span>
+                <span class="go">→</span>
+            </a>
+
+            <div class="chapter" id="lzy_layout"><span>Chapter 6–11</span> 布局与动画</div>
+
+            <a class="item" href="6-1 flex.html">
+                <span class="idx">6-1</span>
+                <span class="ttl">Flex 弹性布局</span>
+                <span class="desc">四个方块的排列与间距演示</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="6-2 一左一右.html">
+                <span class="idx">6-2</span>
+                <span class="ttl">一左一右</span>
+                <span class="desc">固定侧栏 + 自适应内容分栏</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="9-1 transition.html">
+                <span class="idx">9-1</span>
+                <span class="ttl">CSS 过渡动画</span>
+                <span class="desc">图片网格悬停放大与标签浮现</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="10-1 animation.html">
+                <span class="idx">10-1</span>
+                <span class="ttl">关键帧动画</span>
+                <span class="desc">颜色循环、浮动、旋转与光晕</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="10-2.html">
+                <span class="idx">10-2</span>
+                <span class="ttl">CSS 动画幻灯片</span>
+                <span class="desc">纯 CSS 淡入淡出自动轮播</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="10-3.html">
+                <span class="idx">10-3</span>
+                <span class="ttl">响应式全屏动画</span>
+                <span class="desc">断点切换背景与字号的全屏页</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="10-4.html">
+                <span class="idx">10-4</span>
+                <span class="ttl">响应式布局重排</span>
+                <span class="desc">卡片随断点 2 / 3 / 4 列重排</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="11-2.html">
+                <span class="idx">11-2</span>
+                <span class="ttl">CSS3 3D 动画</span>
+                <span class="desc">正方体、翻转卡、环形轮播与倾斜</span>
+                <span class="go">→</span>
+            </a>
+            <a class="item" href="11-4.html">
+                <span class="idx">11-4</span>
+                <span class="ttl">CSS3 3D 图片动画</span>
+                <span class="desc">图片立方体、环形轮播与图片墙</span>
                 <span class="go">→</span>
             </a>
 
@@ -360,7 +535,7 @@
             </a>
         </nav>
 
-        <section class="prompt">
+        <section class="prompt" id="lzy_about">
             <div class="quote">“</div>
             <h3>任务提示词</h3>
             <p>创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为李知芸的《高级网页设计》课堂实践，美化页面，页面中包括本提示词。</p>
@@ -428,6 +603,11 @@
         resize();
         window.addEventListener("resize", resize);
         frame();
+
+        var lzy_items = document.querySelectorAll(".item");
+        for(var lzy_i = 0; lzy_i < lzy_items.length; lzy_i++){
+            lzy_items[lzy_i].style.setProperty("--lzy_delay", (0.15 + lzy_i * 0.05).toFixed(2) + "s");
+        }
     })();
     </script>
 </body>

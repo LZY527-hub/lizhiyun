@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：11-4 CSS3 3D图片动画 -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>527李知芸 · CSS3 3D图片动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 24px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .lzy_sub {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 28px 0 12px;
+            padding-left: 10px;
+            border-left: 5px solid #2f7f74;
+        }
+
+        .lzy_panel {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 24px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lzy_tip {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .lzy_tip code {
+            background: #eef1f5;
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+        }
+
+        /* ===== 演示一：图片立方体 ===== */
+        .lzy_scene {
+            perspective: 700px;
+        }
+
+        .lzy_imgCube {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            transform-style: preserve-3d;
+            animation: lzyCubeSpin 12s linear infinite;
+        }
+
+        .lzy_cubeFace {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .lzy_cubeFace img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .lzy_cubeFaceFront  { transform: translateZ(90px); }
+        .lzy_cubeFaceBack   { transform: rotateY(180deg) translateZ(90px); }
+        .lzy_cubeFaceRight  { transform: rotateY(90deg) translateZ(90px); }
+        .lzy_cubeFaceLeft   { transform: rotateY(-90deg) translateZ(90px); }
+        .lzy_cubeFaceTop    { transform: rotateX(90deg) translateZ(90px); }
+        .lzy_cubeFaceBottom { transform: rotateX(-90deg) translateZ(90px); }
+
+        @keyframes lzyCubeSpin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(340deg) rotateY(360deg); }
+        }
+
+        /* ===== 演示二：图片环形轮播 ===== */
+        .lzy_ringScene {
+            perspective: 1000px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 50px;
+        }
+
+        .lzy_imgRing {
+            position: relative;
+            width: 220px;
+            height: 145px;
+            transform-style: preserve-3d;
+            animation: lzyRingSpin 16s linear infinite;
+        }
+
+        .lzy_imgRing:hover {
+            animation-play-state: paused;
+        }
+
+        .lzy_ringFace {
+            position: absolute;
+            width: 220px;
+            height: 145px;
+            left: 0;
+            top: 0;
+            overflow: hidden;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+        }
+
+        .lzy_ringFace img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .lzy_ringFace:nth-child(1) { transform: rotateY(0deg)   translateZ(190px); }
+        .lzy_ringFace:nth-child(2) { transform: rotateY(60deg)  translateZ(190px); }
+        .lzy_ringFace:nth-child(3) { transform: rotateY(120deg) translateZ(190px); }
+        .lzy_ringFace:nth-child(4) { transform: rotateY(180deg) translateZ(190px); }
+        .lzy_ringFace:nth-child(5) { transform: rotateY(240deg) translateZ(190px); }
+        .lzy_ringFace:nth-child(6) { transform: rotateY(300deg) translateZ(190px); }
+
+        @keyframes lzyRingSpin {
+            from { transform: rotateY(0deg); }
+            to   { transform: rotateY(360deg); }
+        }
+
+        /* ===== 演示三：图片翻转卡片 ===== */
+        .lzy_flip {
+            width: 280px;
+            height: 190px;
+            perspective: 900px;
+            cursor: pointer;
+        }
+
+        .lzy_flipInner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.9s;
+        }
+
+        .lzy_flip:hover .lzy_flipInner {
+            transform: rotateY(180deg);
+        }
+
+        .lzy_flipSide {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .lzy_flipSide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .lzy_flipBack {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #2f7f74, #f4a259);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #fff;
+        }
+
+        .lzy_flipBack strong {
+            font-size: 20px;
+        }
+
+        .lzy_flipBack span {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* ===== 演示四：3D 图片墙（悬浮抬起） ===== */
+        .lzy_wall {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .lzy_wallItem {
+            width: 170px;
+            height: 120px;
+            perspective: 500px;
+        }
+
+        .lzy_wallFace {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            transition: transform 0.4s;
+        }
+
+        .lzy_wallFace img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .lzy_wallItem:hover .lzy_wallFace {
+            transform: rotateX(18deg) rotateY(-18deg) scale(1.06) translateZ(10px);
+        }
+
+        .lzy_wallItem:nth-child(2):hover .lzy_wallFace {
+            transform: rotateX(-18deg) rotateY(18deg) scale(1.06);
+        }
+
+        .lzy_wallItem:nth-child(3):hover .lzy_wallFace {
+            transform: rotateX(18deg) rotateY(18deg) scale(1.08);
+        }
+
+        /* ===== 页脚：返回首页 ===== */
+        .lzy_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .lzy_footer a {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, #2f7f74, #115e59);
+            font-weight: bold;
+            padding: 10px 22px;
+            border-radius: 999px;
+            box-shadow: 0 6px 16px rgba(47, 127, 116, 0.35);
+            transition: transform 0.2s ease;
+        }
+
+        .lzy_footer a:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS3 3D 图片动画</h1>
+    <p class="lzy_sub">李知芸 · 把 <code>&lt;img&gt;</code> 放进 <code>preserve-3d</code> 立体空间：图片立方体、环形轮播、翻转卡片与 3D 图片墙（图片均来自本目录 <code>img/</code>）。</p>
+
+    <h2>一、图片立方体（六面贴图，自动旋转）</h2>
+    <div class="lzy_panel">
+        <p class="lzy_tip">六个面各贴一张图片，沿 Z 轴平移 <code>translateZ(90px)</code> 拼成立方体，关键帧同时旋转 X / Y 轴，图片跟随面一起转动。</p>
+        <div class="lzy_scene">
+            <div class="lzy_imgCube">
+                <div class="lzy_cubeFace lzy_cubeFaceFront"><img src="img/s1.png" alt="李知芸的立方体贴图一"></div>
+                <div class="lzy_cubeFace lzy_cubeFaceBack"><img src="img/s2.png" alt="李知芸的立方体贴图二"></div>
+                <div class="lzy_cubeFace lzy_cubeFaceRight"><img src="img/s3.png" alt="李知芸的立方体贴图三"></div>
+                <div class="lzy_cubeFace lzy_cubeFaceLeft"><img src="img/s4.png" alt="李知芸的立方体贴图四"></div>
+                <div class="lzy_cubeFace lzy_cubeFaceTop"><img src="img/s1.png" alt="李知芸的立方体贴图五"></div>
+                <div class="lzy_cubeFace lzy_cubeFaceBottom"><img src="img/s2.png" alt="李知芸的立方体贴图六"></div>
+            </div>
+        </div>
+    </div>
+
+    <h2>二、图片环形轮播（悬停暂停）</h2>
+    <div class="lzy_panel">
+        <p class="lzy_tip">6 张图片面板各旋转 60° 后推出 <code>translateZ(190px)</code> 围成一圈，绕 Y 轴持续旋转；鼠标悬停时 <code>animation-play-state: paused</code> 暂停，方便细看。</p>
+        <div class="lzy_ringScene">
+            <div class="lzy_imgRing">
+                <div class="lzy_ringFace"><img src="img/s3.png" alt="李知芸的环形图片一"></div>
+                <div class="lzy_ringFace"><img src="img/s4.png" alt="李知芸的环形图片二"></div>
+                <div class="lzy_ringFace"><img src="img/s1.png" alt="李知芸的环形图片三"></div>
+                <div class="lzy_ringFace"><img src="img/s2.png" alt="李知芸的环形图片四"></div>
+                <div class="lzy_ringFace"><img src="img/s3.png" alt="李知芸的环形图片五"></div>
+                <div class="lzy_ringFace"><img src="img/s4.png" alt="李知芸的环形图片六"></div>
+            </div>
+        </div>
+    </div>
+
+    <h2>三、图片翻转卡片（backface-visibility）</h2>
+    <div class="lzy_panel">
+        <p class="lzy_tip">正面是图片、背面是文字说明；背面预先 <code>rotateY(180deg)</code> 并靠 <code>backface-visibility: hidden</code> 隐藏，hover 时卡片整体翻转 180°。</p>
+        <div class="lzy_flip">
+            <div class="lzy_flipInner">
+                <div class="lzy_flipSide lzy_flipFront">
+                    <img src="img/s2.png" alt="李知芸的翻转卡片正面图片">
+                </div>
+                <div class="lzy_flipSide lzy_flipBack">
+                    <strong>卡片背面</strong>
+                    <span>图片 + 3D 翻转的组合技巧</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>四、3D 图片墙（悬浮抬起）</h2>
+    <div class="lzy_panel">
+        <p class="lzy_tip">每张图片卡片自带 <code>perspective</code>，悬停时用 <code>rotateX / rotateY / scale / translateZ</code> 组合出不同方向的立体抬起效果。</p>
+        <div class="lzy_wall">
+            <div class="lzy_wallItem">
+                <div class="lzy_wallFace"><img src="img/s3.png" alt="李知芸的图片墙一"></div>
+            </div>
+            <div class="lzy_wallItem">
+                <div class="lzy_wallFace"><img src="img/s4.png" alt="李知芸的图片墙二"></div>
+            </div>
+            <div class="lzy_wallItem">
+                <div class="lzy_wallFace"><img src="img/s1.png" alt="李知芸的图片墙三"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lzy_footer">
+        <a href="index.html">返回作品集</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：10-2 CSS动画幻灯片 -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>527李知芸 · CSS动画幻灯片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #eef2f7;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .lzy_wrap {
+            width: min(520px, 90vw);
+            padding: 18px;
+            background: #ffffff;
+            border: 1px solid #dbe3ee;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+        }
+
+        .lzy_slider {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #0f172a;
+        }
+
+        .lzy_slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            animation: lzyFade 9s infinite ease-in-out;
+        }
+
+        .lzy_slide:nth-child(1) { animation-delay: 0s; }
+        .lzy_slide:nth-child(2) { animation-delay: 3s; }
+        .lzy_slide:nth-child(3) { animation-delay: 6s; }
+
+        .lzy_imageBox {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            overflow: hidden;
+        }
+
+        .lzy_imageBox img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            filter: saturate(1.05) contrast(1.02);
+            transform: scale(1.02);
+        }
+
+        .lzy_titleOverlay {
+            position: absolute;
+            left: 18px;
+            bottom: 18px;
+            color: #ffffff;
+            background: rgba(15, 23, 42, 0.42);
+            border-left: 4px solid #0ea5e9;
+            padding: 10px 16px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+        }
+
+        .lzy_info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #0f172a;
+            padding: 18px 20px 22px;
+            min-height: 140px;
+        }
+
+        .lzy_info .lzy_tag {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .lzy_info h2 {
+            font-size: clamp(26px, 3vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            color: #0f172a;
+        }
+
+        .lzy_info p {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        @keyframes lzyFade {
+            0%, 20% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            25%, 45% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50%, 100% {
+                opacity: 0;
+                transform: scale(1.04);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lzy_wrap">
+        <div class="lzy_slider">
+            <div class="lzy_slide">
+                <div class="lzy_imageBox">
+                    <img src="img/s1.png" alt="李知芸的幻灯片图片一" />
+                    <div class="lzy_titleOverlay">李知芸</div>
+                </div>
+                <div class="lzy_info">
+                    <div class="lzy_tag">photo note</div>
+                    <h2>第一幕 · 出击</h2>
+                    <p>亮出刀锋，也举起盾牌，在每一次切换里保持从容。</p>
+                </div>
+            </div>
+
+            <div class="lzy_slide">
+                <div class="lzy_imageBox">
+                    <img src="img/s2.png" alt="李知芸的幻灯片图片二" />
+                    <div class="lzy_titleOverlay">李知芸</div>
+                </div>
+                <div class="lzy_info">
+                    <div class="lzy_tag">photo note</div>
+                    <h2>第二幕 · 试探</h2>
+                    <p>单刀向前，留一分余裕，让动作在画面里自然展开。</p>
+                </div>
+            </div>
+
+            <div class="lzy_slide">
+                <div class="lzy_imageBox">
+                    <img src="img/s3.png" alt="李知芸的幻灯片图片三" />
+                    <div class="lzy_titleOverlay">李知芸</div>
+                </div>
+                <div class="lzy_info">
+                    <div class="lzy_tag">photo note</div>
+                    <h2>第三幕 · 对峙</h2>
+                    <p>攻守之间反复周旋，四格定格住最紧张的一瞬。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

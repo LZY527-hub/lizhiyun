@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：10-3 响应式全屏动画 -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>527李知芸 · 响应式全屏动画</title>
+    <style>
+        :root {
+            --lzy_bgStart: #f8fafc;
+            --lzy_bgEnd: #dbe7f5;
+            --lzy_textColor: #0f172a;
+            --lzy_panelColor: rgba(255, 255, 255, 0.66);
+            --lzy_titleSize: 3rem;
+            --lzy_subtitleSize: 1.1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--lzy_bgStart), var(--lzy_bgEnd));
+            color: var(--lzy_textColor);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            transition: background 0.8s ease;
+            overflow: hidden;
+        }
+
+        .lzy_hero {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .lzy_hero::before,
+        .lzy_hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.75;
+            animation: lzyFloatBlur 8s ease-in-out infinite alternate;
+        }
+
+        .lzy_hero::before {
+            width: 20rem;
+            height: 20rem;
+            background: rgba(14, 165, 233, 0.22);
+            left: 10%;
+            top: 18%;
+        }
+
+        .lzy_hero::after {
+            width: 18rem;
+            height: 18rem;
+            background: rgba(244, 162, 97, 0.26);
+            right: 12%;
+            bottom: 16%;
+            animation-delay: 1s;
+        }
+
+        .lzy_panel {
+            position: relative;
+            z-index: 1;
+            width: min(62rem, 86vw);
+            padding: 2.5rem 2rem;
+            border-radius: 1.5rem;
+            background: var(--lzy_panelColor);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 1.25rem 3.75rem rgba(15, 23, 42, 0.12);
+            backdrop-filter: blur(8px);
+            text-align: center;
+            animation: lzyFadeUp 1.2s ease;
+        }
+
+        .lzy_eyebrow {
+            font-size: 0.85rem;
+            letter-spacing: 0.35rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: var(--lzy_titleSize);
+            line-height: 1.1;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+            color: #0f172a;
+            text-shadow: 0 0.25rem 1rem rgba(15, 23, 42, 0.12);
+            animation: lzyTitleWave 3s ease-in-out infinite;
+        }
+
+        p {
+            font-size: var(--lzy_subtitleSize);
+            line-height: 1.8;
+            color: #475569;
+            max-width: 42rem;
+            margin: 0 auto;
+            animation: lzyTextGlow 3s ease-in-out infinite alternate;
+        }
+
+        .lzy_name {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 999px;
+            background: rgba(14, 165, 233, 0.12);
+            border: 1px solid rgba(14, 165, 233, 0.38);
+            color: #0369a1;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+            animation: lzyNamePulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes lzyFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes lzyTitleWave {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes lzyTextGlow {
+            from {
+                text-shadow: 0 0 0 rgba(15, 23, 42, 0);
+            }
+            to {
+                text-shadow: 0 0 0.75rem rgba(14, 165, 233, 0.28);
+            }
+        }
+
+        @keyframes lzyNamePulse {
+            0%, 100% {
+                transform: scale(1);
+                background: rgba(14, 165, 233, 0.12);
+            }
+            50% {
+                transform: scale(1.05);
+                background: rgba(14, 165, 233, 0.22);
+            }
+        }
+
+        @keyframes lzyFloatBlur {
+            from {
+                transform: translate3d(-10px, 0, 0) scale(1);
+            }
+            to {
+                transform: translate3d(20px, -20px, 0) scale(1.2);
+            }
+        }
+
+        @media (max-width: 900px) {
+            :root {
+                --lzy_bgStart: #f1f5f9;
+                --lzy_bgEnd: #d6efe9;
+                --lzy_titleSize: 2.3rem;
+                --lzy_subtitleSize: 1rem;
+            }
+
+            .lzy_panel {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --lzy_bgStart: #fdf6ec;
+                --lzy_bgEnd: #fbe0cd;
+                --lzy_titleSize: 1.8rem;
+                --lzy_subtitleSize: 0.9rem;
+            }
+
+            .lzy_hero {
+                padding: 1rem;
+            }
+
+            .lzy_panel {
+                width: 90vw;
+                padding: 1.5rem 1rem;
+            }
+
+            .lzy_eyebrow {
+                letter-spacing: 0.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lzy_hero">
+        <div class="lzy_panel">
+            <div class="lzy_eyebrow">RESPONSIVE DESIGN</div>
+            <h1>VIEWPORT<span style="display:block;">自适应</span></h1>
+            <p>
+                拖动浏览器窗口改变宽度，背景配色、字号与留白会按断点自动切换，
+                始终保持清晰、舒适的阅读体验。
+            </p>
+            <div class="lzy_name">李知芸</div>
+        </div>
+    </div>
+</body>
+</html>

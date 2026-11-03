@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-03  功能名称：10-4 响应式布局 -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>527李知芸 · 响应式布局</title>
+    <style>
+        :root {
+            --lzy_bg1: #f8fafc;
+            --lzy_bg2: #dbeafe;
+            --lzy_cardBg: #ffffff;
+            --lzy_cardBorder: #e2e8f0;
+            --lzy_text: #0f172a;
+            --lzy_muted: #64748b;
+            --lzy_shadow: rgba(15, 23, 42, 0.12);
+            --lzy_boxSize: 1.6rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            min-width: 20rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--lzy_bg1), var(--lzy_bg2));
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: var(--lzy_text);
+            padding: 1.25rem;
+        }
+
+        .lzy_wrap {
+            width: min(68rem, 100%);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 1.25rem 3rem var(--lzy_shadow);
+            backdrop-filter: blur(8px);
+        }
+
+        .lzy_header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .lzy_header h1 {
+            font-size: clamp(1.5rem, 2vw + 0.8rem, 3rem);
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+
+        .lzy_header p {
+            font-size: 0.95rem;
+            color: var(--lzy_muted);
+        }
+
+        .lzy_grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .lzy_item {
+            flex: 1 1 12rem;
+            min-height: 10rem;
+            padding: 1rem;
+            border-radius: 1.1rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--lzy_cardBorder);
+            background: linear-gradient(135deg, #ffffff, #f1f5f9);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0.75rem 1.5rem rgba(15, 23, 42, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .lzy_item::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), transparent 60%);
+            pointer-events: none;
+        }
+
+        .lzy_item:hover {
+            transform: translateY(-0.35rem);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1rem 2rem rgba(15, 23, 42, 0.12);
+        }
+
+        .lzy_box {
+            width: var(--lzy_boxSize);
+            height: var(--lzy_boxSize);
+            background: linear-gradient(135deg, #f4a259, #2f7f74);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            animation: lzyPulse 2s ease-in-out infinite alternate;
+            box-shadow: 0 0.5rem 1rem rgba(47, 127, 116, 0.25);
+        }
+
+        .lzy_item h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.45rem;
+            position: relative;
+            z-index: 1;
+            color: #0f172a;
+        }
+
+        .lzy_item p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--lzy_muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .lzy_name {
+            margin-top: 1.25rem;
+            text-align: center;
+            font-size: clamp(1.05rem, 0.8vw + 0.8rem, 1.6rem);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #0f172a;
+        }
+
+        @keyframes lzyPulse {
+            from {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            to {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @media (min-width: 320px) {
+            .lzy_item {
+                flex-basis: calc(50% - 0.5rem);
+            }
+        }
+
+        @media (min-width: 640px) {
+            .lzy_item {
+                flex-basis: calc(33.333% - 0.7rem);
+            }
+        }
+
+        @media (min-width: 980px) {
+            .lzy_item {
+                flex-basis: calc(25% - 0.8rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lzy_wrap">
+        <div class="lzy_header">
+            <h1>MEDIA QUERY</h1>
+            <p>拖动窗口，卡片数量随断点自动重排</p>
+        </div>
+
+        <div class="lzy_grid">
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 01</h2>
+                <p>320px 起按两列排布，内容不再拥挤。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 02</h2>
+                <p>窄屏自动换行，卡片高度保持整齐。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 03</h2>
+                <p>640px 切到三列，信息密度更均衡。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 04</h2>
+                <p>间距随列数缩放，边缘始终留有余量。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 05</h2>
+                <p>980px 显示四列，大屏浏览更高效。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 06</h2>
+                <p>悬停轻抬，阴影提示可交互层级。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 07</h2>
+                <p>方块呼吸缩放，给静态页面一点节奏。</p>
+            </div>
+            <div class="lzy_item">
+                <div class="lzy_box"></div>
+                <h2>栅格 08</h2>
+                <p>同一套结构，同时适配手机与桌面。</p>
+            </div>
+        </div>
+
+        <div class="lzy_name">李知芸</div>
+    </div>
+</body>
+</html>
