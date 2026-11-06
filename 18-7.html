@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-05  功能名称：18-7 Three.js 三维柱状图与三维环形图 -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-7 Three.js 三维图表 · 李知芸</title>
+<style>
+    :root{
+        --lzy_bg:#05060b;
+        --lzy_muted:#a7b3c9;
+        --lzy_c1:#6d7cff;
+        --lzy_c2:#5fd8c8;
+        --lzy_gold:#f2c97d;
+        --lzy_border:rgba(255,255,255,.09);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+        min-height:100vh;
+        background:
+            radial-gradient(1000px 720px at 6% -12%, rgba(109,124,255,.18) 0%, rgba(5,6,11,0) 60%),
+            radial-gradient(900px 700px at 102% 8%, rgba(242,201,125,.10) 0%, rgba(5,6,11,0) 55%),
+            radial-gradient(900px 800px at 50% 108%, rgba(95,216,200,.09) 0%, rgba(5,6,11,0) 62%),
+            var(--lzy_bg);
+        color:#fff;
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        line-height:1.6;
+        -webkit-font-smoothing:antialiased;
+        overflow-x:hidden;
+    }
+    body::before{
+        content:"";
+        position:fixed;inset:0;z-index:0;pointer-events:none;
+        background-image:
+            linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size:48px 48px;
+        -webkit-mask-image:radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%);
+        mask-image:radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%);
+    }
+
+    .lzy_wrap{
+        position:relative;z-index:1;
+        max-width:1240px;
+        margin:0 auto;
+        padding:26px 28px 56px;
+    }
+
+    .lzy_topnav{
+        display:flex;align-items:center;justify-content:space-between;gap:16px;
+        margin-bottom:48px;
+    }
+    .lzy_back{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:8px 16px;
+        border:1px solid rgba(255,255,255,.14);
+        border-radius:999px;
+        background:rgba(255,255,255,.04);
+        backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);
+        color:#dfe6f5;text-decoration:none;
+        font-size:12px;letter-spacing:1px;
+        transition:background .25s ease,border-color .25s ease,transform .25s ease;
+    }
+    .lzy_back:hover{
+        background:rgba(255,255,255,.1);
+        border-color:rgba(109,124,255,.55);
+        transform:translateY(-1px);
+    }
+    .lzy_topTag{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;letter-spacing:3px;color:#8f9bb3;text-transform:uppercase;
+        white-space:nowrap;
+    }
+
+    .lzy_hero{max-width:880px;margin-bottom:34px;}
+    .lzy_eyebrow{
+        display:flex;align-items:center;gap:12px;
+        margin-bottom:16px;
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;font-weight:600;letter-spacing:4px;
+        text-transform:uppercase;color:#8f9bb3;
+    }
+    .lzy_eyebrow::before{
+        content:"";width:34px;height:1px;
+        background:linear-gradient(90deg,var(--lzy_c1),transparent);
+    }
+    .lzy_title{
+        margin-bottom:16px;
+        font-size:clamp(30px,4.6vw,52px);
+        font-weight:800;letter-spacing:1px;line-height:1.12;
+        background:linear-gradient(94deg,#ffffff 18%,var(--lzy_gold) 94%);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .lzy_sub{
+        max-width:740px;
+        font-size:14px;line-height:2;color:var(--lzy_muted);
+    }
+    .lzy_tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;list-style:none;}
+    .lzy_tags li{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:6px 13px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:999px;
+        background:rgba(255,255,255,.03);
+        font-size:12px;color:#c3cde0;letter-spacing:.5px;
+    }
+    .lzy_tags i{width:6px;height:6px;border-radius:50%;background:var(--lzy_c1);}
+    .lzy_tags li:nth-child(2) i{background:var(--lzy_c2);}
+    .lzy_tags li:nth-child(3) i{background:var(--lzy_gold);}
+
+    .lzy_grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:22px;
+    }
+    .lzy_card{
+        position:relative;
+        display:flex;
+        flex-direction:column;
+        padding:22px 22px 16px;
+        border:1px solid var(--lzy_border);
+        border-radius:20px;
+        background:linear-gradient(160deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.018) 52%, rgba(255,255,255,.008) 100%);
+        box-shadow:0 24px 60px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.07);
+        overflow:hidden;
+    }
+    .lzy_card::after{
+        content:"";
+        position:absolute;top:-90px;right:-70px;
+        width:220px;height:220px;border-radius:50%;
+        background:radial-gradient(circle, rgba(109,124,255,.18), transparent 68%);
+        pointer-events:none;
+    }
+    .lzy_card:nth-child(2)::after{
+        background:radial-gradient(circle, rgba(242,201,125,.16), transparent 68%);
+    }
+    .lzy_cardHead{
+        position:relative;z-index:1;
+        display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+        padding-bottom:14px;
+        border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .lzy_cardTitle{
+        display:flex;align-items:center;gap:10px;
+        font-size:17px;font-weight:600;letter-spacing:.5px;color:#fff;
+    }
+    .lzy_cardTitle::before{
+        content:"";
+        width:3px;height:15px;border-radius:2px;
+        background:linear-gradient(180deg,var(--lzy_c1),rgba(109,124,255,.15));
+    }
+    .lzy_card:nth-child(2) .lzy_cardTitle::before{
+        background:linear-gradient(180deg,var(--lzy_gold),rgba(242,201,125,.15));
+    }
+    .lzy_cardDesc{
+        margin-top:7px;
+        font-size:11.5px;line-height:1.9;color:#8f9bb3;letter-spacing:.3px;
+    }
+    .lzy_badge{
+        flex:none;
+        padding:4px 11px;
+        border:1px solid rgba(109,124,255,.35);
+        border-radius:999px;
+        background:rgba(109,124,255,.1);
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:9px;letter-spacing:2px;color:#aab6ff;text-transform:uppercase;
+    }
+    .lzy_card:nth-child(2) .lzy_badge{
+        border-color:rgba(242,201,125,.38);
+        background:rgba(242,201,125,.1);
+        color:var(--lzy_gold);
+    }
+
+    .lzy_sceneBox{
+        position:relative;z-index:1;
+        width:100%;
+        height:440px;
+        margin-top:8px;
+        border-radius:14px;
+        background:radial-gradient(circle at 50% 42%, rgba(20,32,56,.72) 0%, rgba(4,7,14,.9) 72%);
+        border:1px solid rgba(255,255,255,.05);
+        overflow:hidden;
+        cursor:grab;
+    }
+    .lzy_sceneBox:active{cursor:grabbing;}
+    .lzy_sceneBox canvas{display:block;width:100% !important;height:100% !important;}
+
+    .lzy_legend{
+        position:relative;z-index:1;
+        display:flex;flex-wrap:wrap;gap:8px 14px;
+        margin-top:12px;
+        list-style:none;
+    }
+    .lzy_legend li{
+        display:inline-flex;align-items:center;gap:7px;
+        font-size:11px;color:#a7b3c9;letter-spacing:.3px;
+    }
+    .lzy_legend b{
+        width:8px;height:8px;border-radius:3px;
+        background:var(--lzy_c1);
+        box-shadow:0 0 8px rgba(109,124,255,.65);
+    }
+    .lzy_legend li:nth-child(2) b{background:var(--lzy_c2);box-shadow:0 0 8px rgba(95,216,200,.65);}
+    .lzy_legend li:nth-child(3) b{background:var(--lzy_gold);box-shadow:0 0 8px rgba(242,201,125,.65);}
+    .lzy_legend li:nth-child(4) b{background:#c4b5fd;box-shadow:0 0 8px rgba(196,181,253,.65);}
+    .lzy_legend li:nth-child(5) b{background:#e2603f;box-shadow:0 0 8px rgba(226,96,63,.65);}
+
+    .lzy_note{
+        position:relative;z-index:1;
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        margin-top:10px;
+        padding-top:12px;
+        border-top:1px solid rgba(255,255,255,.06);
+        font-size:10.5px;letter-spacing:.6px;color:#6f7b92;
+    }
+    .lzy_note span:last-child{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        color:#9aa6bd;
+    }
+
+    .lzy_footer{
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        margin-top:40px;padding-top:20px;
+        border-top:1px solid rgba(255,255,255,.07);
+        font-size:11px;letter-spacing:.8px;color:#5f6b82;
+    }
+    .lzy_footer a{color:#8f9bb3;text-decoration:none;transition:color .2s ease;}
+    .lzy_footer a:hover{color:#fff;}
+
+    @media (max-width:980px){
+        .lzy_grid{grid-template-columns:1fr;}
+        .lzy_sceneBox{height:360px;}
+        .lzy_wrap{padding:22px 18px 44px;}
+        .lzy_footer{flex-direction:column;align-items:flex-start;gap:8px;}
+    }
+</style>
+</head>
+<body>
+<div class="lzy_wrap">
+    <nav class="lzy_topnav">
+        <a class="lzy_back" href="index.html">← 返回首页</a>
+        <span class="lzy_topTag">Three.js · WebGL 3D</span>
+    </nav>
+
+    <header class="lzy_hero">
+        <p class="lzy_eyebrow">18-7 / Three.js Practice</p>
+        <h1 class="lzy_title">Three.js 三维<br>图表可视化</h1>
+        <p class="lzy_sub">
+            使用本地引入的 Three.js 用 WebGL 手工搭建两个三维图表：左侧是被拉伸成立体柱子的周咨询量柱状图，
+            右侧是按占比挤出成型的环形饼图。两个场景都支持鼠标拖拽旋转与自动旋转。
+        </p>
+        <ul class="lzy_tags">
+            <li><i></i>WebGL 渲染</li>
+            <li><i></i>拖拽旋转</li>
+            <li><i></i>本地 cdn 资源</li>
+        </ul>
+    </header>
+
+    <main class="lzy_grid">
+        <section class="lzy_card">
+            <div class="lzy_cardHead">
+                <div>
+                    <h2 class="lzy_cardTitle">近七天咨询量三维柱状图</h2>
+                    <p class="lzy_cardDesc">柱体高度对应咨询量，按数值由低到高由蓝向金色过渡，地面带网格参考线。</p>
+                </div>
+                <span class="lzy_badge">3D Bar</span>
+            </div>
+            <div class="lzy_sceneBox" id="lzy_barScene"></div>
+            <ul class="lzy_legend">
+                <li><b></b>周一 128</li>
+                <li><b></b>周二 156</li>
+                <li><b></b>周三 142</li>
+                <li><b></b>周四 189</li>
+                <li><b></b>周五 205</li>
+                <li><b></b>周六 176</li>
+                <li><b></b>周日 231</li>
+            </ul>
+            <div class="lzy_note">
+                <span>数据单位：次 / 天</span>
+                <span>three.js r149</span>
+            </div>
+        </section>
+
+        <section class="lzy_card">
+            <div class="lzy_cardHead">
+                <div>
+                    <h2 class="lzy_cardTitle">问题类型占比三维环形图</h2>
+                    <p class="lzy_cardDesc">每个扇区由 ExtrudeGeometry 挤出成型，扇区间留缝并统一使用金属质感材质。</p>
+                </div>
+                <span class="lzy_badge">3D Ring</span>
+            </div>
+            <div class="lzy_sceneBox" id="lzy_ringScene"></div>
+            <ul class="lzy_legend">
+                <li><b></b>售前咨询 32%</li>
+                <li><b></b>售后问题 26%</li>
+                <li><b></b>产品使用 18%</li>
+                <li><b></b>账户支付 14%</li>
+                <li><b></b>其他问题 10%</li>
+            </ul>
+            <div class="lzy_note">
+                <span>数据来源：客服工单分类统计</span>
+                <span>拖拽可旋转</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="lzy_footer">
+        <span>《高级网页设计I》18-7 · 李知芸 · 2026-11-05</span>
+        <span><a href="18-6.html">18-6 Mermaid</a> · <a href="18-4.html">18-4 ECharts</a></span>
+    </footer>
+</div>
+
+<script src="./cdn/three.min.js"></script>
+<script>
+    /* ================= 公共：场景初始化 ================= */
+    function lzy_createScene(lzy_container, lzy_cameraPos, lzy_lookAt) {
+        var lzy_width = lzy_container.clientWidth;
+        var lzy_height = lzy_container.clientHeight;
+
+        var lzy_scene = new THREE.Scene();
+        var lzy_camera = new THREE.PerspectiveCamera(45, lzy_width / lzy_height, 0.1, 100);
+        lzy_camera.position.set(lzy_cameraPos.x, lzy_cameraPos.y, lzy_cameraPos.z);
+        lzy_camera.lookAt(lzy_lookAt.x, lzy_lookAt.y, lzy_lookAt.z);
+
+        var lzy_renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        lzy_renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        lzy_renderer.setSize(lzy_width, lzy_height);
+        lzy_renderer.shadowMap.enabled = true;
+        lzy_renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        lzy_container.appendChild(lzy_renderer.domElement);
+
+        var lzy_ambient = new THREE.AmbientLight(0x9fb3d1, 0.85);
+        lzy_scene.add(lzy_ambient);
+
+        var lzy_dir = new THREE.DirectionalLight(0xffffff, 1.25);
+        lzy_dir.position.set(6, 10, 7);
+        lzy_dir.castShadow = true;
+        lzy_dir.shadow.mapSize.width = 1024;
+        lzy_dir.shadow.mapSize.height = 1024;
+        lzy_dir.shadow.camera.near = 1;
+        lzy_dir.shadow.camera.far = 30;
+        lzy_scene.add(lzy_dir);
+
+        var lzy_rim = new THREE.PointLight(0x6d7cff, 1.2, 30);
+        lzy_rim.position.set(-6, 4, -6);
+        lzy_scene.add(lzy_rim);
+
+        return {
+            scene: lzy_scene,
+            camera: lzy_camera,
+            renderer: lzy_renderer,
+            width: lzy_width,
+            height: lzy_height
+        };
+    }
+
+    /* 鼠标拖拽旋转 */
+    function lzy_bindDrag(lzy_container, lzy_getGroup) {
+        var lzy_dragging = false;
+        var lzy_lastX = 0;
+        var lzy_lastY = 0;
+        var lzy_targetY = 0;
+        var lzy_targetX = 0;
+        var lzy_currentY = 0;
+        var lzy_currentX = 0;
+
+        lzy_container.addEventListener("pointerdown", function (lzy_e) {
+            lzy_dragging = true;
+            lzy_lastX = lzy_e.clientX;
+            lzy_lastY = lzy_e.clientY;
+            lzy_container.setPointerCapture(lzy_e.pointerId);
+        });
+
+        lzy_container.addEventListener("pointermove", function (lzy_e) {
+            if (!lzy_dragging) { return; }
+            lzy_targetY += (lzy_e.clientX - lzy_lastX) * 0.008;
+            lzy_targetX += (lzy_e.clientY - lzy_lastY) * 0.005;
+            lzy_targetX = Math.max(-0.5, Math.min(0.5, lzy_targetX));
+            lzy_lastX = lzy_e.clientX;
+            lzy_lastY = lzy_e.clientY;
+        });
+
+        function lzy_end() { lzy_dragging = false; }
+        lzy_container.addEventListener("pointerup", lzy_end);
+        lzy_container.addEventListener("pointercancel", lzy_end);
+
+        return {
+            update: function (lzy_autoSpeed) {
+                if (!lzy_dragging) { lzy_targetY += lzy_autoSpeed; }
+                lzy_currentY += (lzy_targetY - lzy_currentY) * 0.08;
+                lzy_currentX += (lzy_targetX - lzy_currentX) * 0.08;
+                var lzy_group = lzy_getGroup();
+                if (lzy_group) {
+                    lzy_group.rotation.y = lzy_currentY;
+                    lzy_group.rotation.x = lzy_currentX;
+                }
+            }
+        };
+    }
+
+    /* ================= 图一：三维柱状图 ================= */
+    (function () {
+        var lzy_box = document.getElementById("lzy_barScene");
+        var lzy_values = [128, 156, 142, 189, 205, 176, 231];
+        var lzy_max = Math.max.apply(null, lzy_values);
+
+        var lzy_ctx = lzy_createScene(lzy_box, { x: 0, y: 3.8, z: 7.4 }, { x: 0, y: 1.5, z: 0 });
+        var lzy_group = new THREE.Group();
+        lzy_ctx.scene.add(lzy_group);
+
+        // 地面与网格
+        var lzy_floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(9.2, 5.6),
+            new THREE.MeshStandardMaterial({ color: 0x0b1222, roughness: 0.92, metalness: 0.05 })
+        );
+        lzy_floor.rotation.x = -Math.PI / 2;
+        lzy_floor.receiveShadow = true;
+        lzy_group.add(lzy_floor);
+
+        var lzy_grid = new THREE.GridHelper(9, 9, 0x1c3157, 0x142138);
+        lzy_grid.position.y = 0.01;
+        lzy_group.add(lzy_grid);
+
+        // 柱体
+        var lzy_barGeoCache = new THREE.BoxGeometry(0.52, 1, 0.52);
+        var lzy_min = Math.min.apply(null, lzy_values);
+        var lzy_barColors = [];
+        for (var lzy_i = 0; lzy_i < lzy_values.length; lzy_i++) {
+            var lzy_h = lzy_values[lzy_i] / lzy_max * 3.4;
+            var lzy_rate = (lzy_values[lzy_i] - lzy_min) / (lzy_max - lzy_min);
+            var lzy_color = new THREE.Color().setHSL(0.6 - lzy_rate * 0.5, 0.72, 0.52);
+            lzy_barColors.push(lzy_color);
+
+            var lzy_mat = new THREE.MeshStandardMaterial({
+                color: lzy_color,
+                metalness: 0.45,
+                roughness: 0.28,
+                emissive: lzy_color,
+                emissiveIntensity: 0.16
+            });
+
+            var lzy_bar = new THREE.Mesh(lzy_barGeoCache, lzy_mat);
+            lzy_bar.scale.y = lzy_h;
+            lzy_bar.position.set((lzy_i - (lzy_values.length - 1) / 2) * 0.92, lzy_h / 2, 0);
+            lzy_bar.castShadow = true;
+            lzy_bar.receiveShadow = true;
+            lzy_group.add(lzy_bar);
+        }
+
+        // 顶部与底部装饰环
+        var lzy_ring = new THREE.Mesh(
+            new THREE.TorusGeometry(4.6, 0.014, 8, 120),
+            new THREE.MeshBasicMaterial({ color: 0x6d7cff, transparent: true, opacity: 0.55 })
+        );
+        lzy_ring.rotation.x = Math.PI / 2;
+        lzy_ring.position.y = 0.02;
+        lzy_group.add(lzy_ring);
+
+        lzy_group.rotation.x = 0.1;
+
+        // 让图例色点与柱体颜色一一对应
+        var lzy_legendDots = lzy_box.closest(".lzy_card").querySelectorAll(".lzy_legend b");
+        for (var lzy_k = 0; lzy_k < lzy_legendDots.length; lzy_k++) {
+            if (lzy_barColors[lzy_k]) {
+                lzy_legendDots[lzy_k].style.background = "#" + lzy_barColors[lzy_k].getHexString();
+                lzy_legendDots[lzy_k].style.boxShadow = "0 0 8px #" + lzy_barColors[lzy_k].getHexString();
+            }
+        }
+
+        var lzy_drag = lzy_bindDrag(lzy_box, function () { return lzy_group; });
+
+        function lzy_animate() {
+            lzy_drag.update(0.0035);
+            lzy_ctx.renderer.render(lzy_ctx.scene, lzy_ctx.camera);
+            requestAnimationFrame(lzy_animate);
+        }
+        lzy_animate();
+
+        window.addEventListener("resize", function () {
+            var lzy_w = lzy_box.clientWidth;
+            var lzy_h = lzy_box.clientHeight;
+            lzy_ctx.camera.aspect = lzy_w / lzy_h;
+            lzy_ctx.camera.updateProjectionMatrix();
+            lzy_ctx.renderer.setSize(lzy_w, lzy_h);
+        });
+    })();
+
+    /* ================= 图二：三维环形饼图 ================= */
+    (function () {
+        var lzy_box = document.getElementById("lzy_ringScene");
+        var lzy_data = [
+            { name: "售前咨询", value: 32, color: 0x6d7cff },
+            { name: "售后问题", value: 26, color: 0x5fd8c8 },
+            { name: "产品使用", value: 18, color: 0xf2c97d },
+            { name: "账户支付", value: 14, color: 0xc4b5fd },
+            { name: "其他问题", value: 10, color: 0xe2603f }
+        ];
+
+        var lzy_ctx = lzy_createScene(lzy_box, { x: 0, y: 5.6, z: 5.6 }, { x: 0, y: 0, z: 0 });
+        var lzy_group = new THREE.Group();
+        lzy_ctx.scene.add(lzy_group);
+
+        var lzy_start = Math.PI / 2;
+        var lzy_gap = 0.022;
+
+        lzy_data.forEach(function (lzy_item) {
+            var lzy_angle = lzy_item.value / 100 * Math.PI * 2 - lzy_gap * 2;
+            var lzy_a0 = lzy_start - lzy_gap;
+            var lzy_a1 = lzy_a0 - lzy_angle;
+
+            var lzy_shape = new THREE.Shape();
+            lzy_shape.absarc(0, 0, 1.72, lzy_a0, lzy_a1, true);
+            lzy_shape.absarc(0, 0, 0.86, lzy_a1, lzy_a0, false);
+
+            var lzy_geo = new THREE.ExtrudeGeometry(lzy_shape, {
+                depth: 0.34,
+                bevelEnabled: true,
+                bevelThickness: 0.035,
+                bevelSize: 0.035,
+                bevelSegments: 2,
+                curveSegments: 40
+            });
+
+            var lzy_mat = new THREE.MeshStandardMaterial({
+                color: lzy_item.color,
+                metalness: 0.5,
+                roughness: 0.26,
+                emissive: lzy_item.color,
+                emissiveIntensity: 0.14
+            });
+
+            var lzy_mesh = new THREE.Mesh(lzy_geo, lzy_mat);
+            lzy_mesh.rotation.x = -Math.PI / 2;
+            lzy_mesh.position.y = 0.42;
+            lzy_mesh.castShadow = true;
+            lzy_mesh.receiveShadow = true;
+            lzy_group.add(lzy_mesh);
+
+            lzy_start = lzy_a1 - lzy_gap;
+        });
+
+        // 中心底座
+        var lzy_base = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.84, 0.84, 0.06, 64),
+            new THREE.MeshStandardMaterial({ color: 0x101a2d, metalness: 0.6, roughness: 0.35 })
+        );
+        lzy_base.position.y = 0.4;
+        lzy_base.receiveShadow = true;
+        lzy_group.add(lzy_base);
+
+        var lzy_halo = new THREE.Mesh(
+            new THREE.TorusGeometry(2.1, 0.012, 8, 140),
+            new THREE.MeshBasicMaterial({ color: 0xf2c97d, transparent: true, opacity: 0.45 })
+        );
+        lzy_halo.rotation.x = Math.PI / 2;
+        lzy_halo.position.y = 0.05;
+        lzy_group.add(lzy_halo);
+
+        lzy_group.rotation.x = 0.06;
+
+        var lzy_drag = lzy_bindDrag(lzy_box, function () { return lzy_group; });
+
+        function lzy_animate() {
+            lzy_drag.update(0.0045);
+            lzy_ctx.renderer.render(lzy_ctx.scene, lzy_ctx.camera);
+            requestAnimationFrame(lzy_animate);
+        }
+        lzy_animate();
+
+        window.addEventListener("resize", function () {
+            var lzy_w = lzy_box.clientWidth;
+            var lzy_h = lzy_box.clientHeight;
+            lzy_ctx.camera.aspect = lzy_w / lzy_h;
+            lzy_ctx.camera.updateProjectionMatrix();
+            lzy_ctx.renderer.setSize(lzy_w, lzy_h);
+        });
+    })();
+</script>
+</body>
+</html>

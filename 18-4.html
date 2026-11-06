@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-05  功能名称：18-4 ECharts 牛肉部位价格地图与分类占比饼图 -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-4 ECharts 数据可视化 · 李知芸</title>
+<style>
+    :root{
+        --lzy_bg:#05060b;
+        --lzy_ink:#ffffff;
+        --lzy_muted:#a7b3c9;
+        --lzy_c1:#6d7cff;
+        --lzy_c2:#5fd8c8;
+        --lzy_gold:#f2c97d;
+        --lzy_border:rgba(255,255,255,.09);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+        min-height:100vh;
+        background:
+            radial-gradient(1000px 720px at 6% -12%, rgba(109,124,255,.18) 0%, rgba(5,6,11,0) 60%),
+            radial-gradient(900px 700px at 102% 8%, rgba(242,201,125,.10) 0%, rgba(5,6,11,0) 55%),
+            radial-gradient(900px 800px at 50% 108%, rgba(138,110,255,.10) 0%, rgba(5,6,11,0) 62%),
+            var(--lzy_bg);
+        color:var(--lzy_ink);
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        line-height:1.6;
+        -webkit-font-smoothing:antialiased;
+        text-rendering:optimizeLegibility;
+        overflow-x:hidden;
+    }
+    body::before{
+        content:"";
+        position:fixed;inset:0;z-index:0;pointer-events:none;
+        background-image:
+            linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size:48px 48px;
+        -webkit-mask-image:radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%);
+        mask-image:radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%);
+    }
+
+    .lzy_wrap{
+        position:relative;z-index:1;
+        max-width:1240px;
+        margin:0 auto;
+        padding:26px 28px 56px;
+    }
+
+    /* ===== 顶部返回 ===== */
+    .lzy_topnav{
+        display:flex;align-items:center;justify-content:space-between;gap:16px;
+        margin-bottom:48px;
+    }
+    .lzy_back{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:8px 16px;
+        border:1px solid rgba(255,255,255,.14);
+        border-radius:999px;
+        background:rgba(255,255,255,.04);
+        backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);
+        color:#dfe6f5;text-decoration:none;
+        font-size:12px;letter-spacing:1px;
+        transition:background .25s ease,border-color .25s ease,transform .25s ease;
+    }
+    .lzy_back:hover{
+        background:rgba(255,255,255,.1);
+        border-color:rgba(242,201,125,.55);
+        transform:translateY(-1px);
+    }
+    .lzy_topTag{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;letter-spacing:3px;color:#8f9bb3;text-transform:uppercase;
+        white-space:nowrap;
+    }
+
+    /* ===== 标题区 ===== */
+    .lzy_hero{max-width:880px;margin-bottom:34px;}
+    .lzy_eyebrow{
+        display:flex;align-items:center;gap:12px;
+        margin-bottom:16px;
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;font-weight:600;letter-spacing:4px;
+        text-transform:uppercase;color:#8f9bb3;
+    }
+    .lzy_eyebrow::before{
+        content:"";width:34px;height:1px;
+        background:linear-gradient(90deg,var(--lzy_c1),transparent);
+    }
+    .lzy_title{
+        margin-bottom:16px;
+        font-size:clamp(30px,4.6vw,52px);
+        font-weight:800;letter-spacing:1px;line-height:1.12;
+        background:linear-gradient(94deg,#ffffff 18%,var(--lzy_gold) 94%);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .lzy_sub{
+        max-width:720px;
+        font-size:14px;line-height:2;color:var(--lzy_muted);
+    }
+    .lzy_legend{
+        display:flex;flex-wrap:wrap;gap:8px;
+        margin-top:22px;list-style:none;
+    }
+    .lzy_legend li{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:6px 13px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:999px;
+        background:rgba(255,255,255,.03);
+        font-size:12px;color:#c3cde0;letter-spacing:.5px;
+    }
+    .lzy_legend i{
+        width:7px;height:7px;border-radius:50%;
+        background:var(--lzy_c1);
+    }
+    .lzy_legend li:nth-child(2) i{background:var(--lzy_c2);}
+    .lzy_legend li:nth-child(3) i{background:var(--lzy_gold);}
+
+    /* ===== 图表卡片 ===== */
+    .lzy_grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:22px;
+    }
+    .lzy_card{
+        position:relative;
+        display:flex;
+        flex-direction:column;
+        padding:22px 22px 16px;
+        border:1px solid var(--lzy_border);
+        border-radius:20px;
+        background:
+            linear-gradient(160deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.018) 52%, rgba(255,255,255,.008) 100%);
+        box-shadow:0 24px 60px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.07);
+        overflow:hidden;
+    }
+    .lzy_card::after{
+        content:"";
+        position:absolute;top:-90px;right:-70px;
+        width:220px;height:220px;border-radius:50%;
+        background:radial-gradient(circle, rgba(109,124,255,.18), transparent 68%);
+        pointer-events:none;
+    }
+    .lzy_card:nth-child(2)::after{
+        background:radial-gradient(circle, rgba(242,201,125,.16), transparent 68%);
+    }
+    .lzy_cardHead{
+        position:relative;z-index:1;
+        display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+        padding-bottom:14px;
+        border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .lzy_cardTitle{
+        display:flex;align-items:center;gap:10px;
+        font-size:17px;font-weight:600;letter-spacing:.5px;color:#fff;
+    }
+    .lzy_cardTitle::before{
+        content:"";
+        width:3px;height:15px;border-radius:2px;
+        background:linear-gradient(180deg,var(--lzy_c1),rgba(109,124,255,.15));
+    }
+    .lzy_card:nth-child(2) .lzy_cardTitle::before{
+        background:linear-gradient(180deg,var(--lzy_gold),rgba(242,201,125,.15));
+    }
+    .lzy_cardDesc{
+        margin-top:7px;
+        font-size:11.5px;line-height:1.9;color:#8f9bb3;letter-spacing:.3px;
+    }
+    .lzy_badge{
+        flex:none;
+        padding:4px 11px;
+        border:1px solid rgba(109,124,255,.35);
+        border-radius:999px;
+        background:rgba(109,124,255,.1);
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:9px;letter-spacing:2px;color:#aab6ff;text-transform:uppercase;
+    }
+    .lzy_card:nth-child(2) .lzy_badge{
+        border-color:rgba(242,201,125,.38);
+        background:rgba(242,201,125,.1);
+        color:var(--lzy_gold);
+    }
+    .lzy_chart{
+        position:relative;z-index:1;
+        width:100%;
+        height:520px;
+        margin-top:8px;
+    }
+    .lzy_note{
+        position:relative;z-index:1;
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        margin-top:6px;
+        padding-top:12px;
+        border-top:1px solid rgba(255,255,255,.06);
+        font-size:10.5px;letter-spacing:.6px;color:#6f7b92;
+    }
+    .lzy_note span:last-child{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        color:#9aa6bd;
+    }
+
+    /* ===== 页脚 ===== */
+    .lzy_footer{
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        margin-top:40px;padding-top:20px;
+        border-top:1px solid rgba(255,255,255,.07);
+        font-size:11px;letter-spacing:.8px;color:#5f6b82;
+    }
+    .lzy_footer a{color:#8f9bb3;text-decoration:none;transition:color .2s ease;}
+    .lzy_footer a:hover{color:#fff;}
+
+    @media (max-width:980px){
+        .lzy_grid{grid-template-columns:1fr;}
+        .lzy_chart{height:440px;}
+        .lzy_wrap{padding:22px 18px 44px;}
+        .lzy_footer{flex-direction:column;align-items:flex-start;gap:8px;}
+    }
+</style>
+</head>
+<body>
+<div class="lzy_wrap">
+    <nav class="lzy_topnav">
+        <a class="lzy_back" href="index.html">← 返回首页</a>
+        <span class="lzy_topTag">ECharts · Data Visualization</span>
+    </nav>
+
+    <header class="lzy_hero">
+        <p class="lzy_eyebrow">18-4 / ECharts Practice</p>
+        <h1 class="lzy_title">牛肉部位价格<br>可视化分析</h1>
+        <p class="lzy_sub">
+            使用本地引入的 ECharts 5.6，把法国牛肉分割部位图作为 SVG 地图注册到 geo 坐标系中，
+            用地图配视觉映射呈现各部位的参考价格；再用饼图按部位类别统计平均价格，观察不同类别的价格水平差异。
+        </p>
+        <ul class="lzy_legend">
+            <li><i></i>地图 + 视觉映射</li>
+            <li><i></i>分类占比饼图</li>
+            <li><i></i>本地 cdn 资源</li>
+        </ul>
+    </header>
+
+    <main class="lzy_grid">
+        <section class="lzy_card">
+            <div class="lzy_cardHead">
+                <div>
+                    <h2 class="lzy_cardTitle">牛肉部位参考价格地图</h2>
+                    <p class="lzy_cardDesc">基于官方示例 geo-beef-cuts，鼠标悬停查看部位名称与价格，可拖拽缩放。</p>
+                </div>
+                <span class="lzy_badge">Map</span>
+            </div>
+            <div class="lzy_chart" id="lzy_mapChart"></div>
+            <div class="lzy_note">
+                <span>数据单位：元 / 500g</span>
+                <span>echarts 5.6.0</span>
+            </div>
+        </section>
+
+        <section class="lzy_card">
+            <div class="lzy_cardHead">
+                <div>
+                    <h2 class="lzy_cardTitle">部位类别平均价格占比</h2>
+                    <p class="lzy_cardDesc">按头颈、肩胸、腹肋、后腿、里脊与牛排五类汇总，比较各类别的平均价格占比。</p>
+                </div>
+                <span class="lzy_badge">Pie</span>
+            </div>
+            <div class="lzy_chart" id="lzy_pieChart"></div>
+            <div class="lzy_note">
+                <span>按类别求平均后计算占比</span>
+                <span>pie-simple 改造</span>
+            </div>
+        </section>
+    </main>
+
+    <footer class="lzy_footer">
+        <span>《高级网页设计I》18-4 · 李知芸 · 2026-11-05</span>
+        <span><a href="17-2 SVG下导航.html">17-2 SVG 下导航</a> · <a href="18-3.html">18-3 SVG 架构图</a></span>
+    </footer>
+</div>
+
+<script src="./cdn/echarts.min.js"></script>
+<script src="./cdn/Beef_cuts_France.js"></script>
+<script>
+    // 牛肉各部位参考价格（元 / 500g），name 与 SVG 地图中的 name 属性一一对应
+    var lzy_beefData = [
+        { name: "Queue", value: 22 },
+        { name: "Langue", value: 28 },
+        { name: "Plat de joue", value: 39 },
+        { name: "Gros bout de poitrine", value: 26 },
+        { name: "Jumeau à pot-au-feu", value: 30 },
+        { name: "Onglet", value: 45 },
+        { name: "Plat de tranche", value: 33 },
+        { name: "Araignée", value: 42 },
+        { name: "Gîte à la noix", value: 38 },
+        { name: "Bavette d'aloyau", value: 46 },
+        { name: "Tende de tranche", value: 34 },
+        { name: "Rond de gîte", value: 40 },
+        { name: "Bavettede de flanchet", value: 21 },
+        { name: "Flanchet", value: 24 },
+        { name: "Hampe", value: 36 },
+        { name: "Plat de côtes", value: 25 },
+        { name: "Tendron Milieu de poitrine", value: 27 },
+        { name: "Macreuse à pot-au-feu", value: 32 },
+        { name: "Rumsteck", value: 55 },
+        { name: "Faux-filet", value: 68 },
+        { name: "Côtes Entrecôtes", value: 85 },
+        { name: "Basses côtes", value: 29 },
+        { name: "Collier", value: 18 },
+        { name: "Jumeau à biftek", value: 44 },
+        { name: "Paleron", value: 31 },
+        { name: "Macreuse à bifteck", value: 37 },
+        { name: "Gîte", value: 35 },
+        { name: "Aiguillette baronne", value: 43 },
+        { name: "Filet", value: 98 }
+    ];
+
+    // 按部位类别分组，用于饼图统计
+    var lzy_groupMap = {
+        "头颈与脸颊": ["Queue", "Langue", "Plat de joue", "Collier"],
+        "肩胸与前腿": ["Paleron", "Jumeau à pot-au-feu", "Jumeau à biftek", "Basses côtes", "Plat de côtes", "Tendron Milieu de poitrine", "Gros bout de poitrine"],
+        "腹肋与侧腹": ["Onglet", "Araignée", "Hampe", "Bavette d'aloyau", "Bavettede de flanchet", "Flanchet", "Plat de tranche", "Tende de tranche"],
+        "后腿与臀肉": ["Gîte", "Gîte à la noix", "Rond de gîte", "Macreuse à bifteck", "Macreuse à pot-au-feu", "Aiguillette baronne"],
+        "里脊与牛排": ["Filet", "Faux-filet", "Rumsteck", "Côtes Entrecôtes"]
+    };
+
+    var lzy_priceMap = {};
+    lzy_beefData.forEach(function (lzy_item) {
+        lzy_priceMap[lzy_item.name] = lzy_item.value;
+    });
+
+    // 计算每个类别的平均价格
+    var lzy_pieData = [];
+    Object.keys(lzy_groupMap).forEach(function (lzy_groupName) {
+        var lzy_names = lzy_groupMap[lzy_groupName];
+        var lzy_total = 0;
+        lzy_names.forEach(function (lzy_name) {
+            lzy_total += (lzy_priceMap[lzy_name] || 0);
+        });
+        lzy_pieData.push({
+            name: lzy_groupName,
+            value: Number((lzy_total / lzy_names.length).toFixed(1))
+        });
+    });
+
+    var lzy_mapChart = echarts.init(document.getElementById("lzy_mapChart"));
+    var lzy_pieChart = echarts.init(document.getElementById("lzy_pieChart"));
+
+    var lzy_mapOption = {
+        backgroundColor: "transparent",
+        tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(10,14,24,.92)",
+            borderColor: "rgba(109,124,255,.45)",
+            textStyle: { color: "#e6ecf8", fontSize: 12 },
+            formatter: function (lzy_p) {
+                if (lzy_p.value === undefined || lzy_p.value === null) {
+                    return lzy_p.name + "<br/>暂无报价";
+                }
+                return lzy_p.name + "<br/>参考价：" + lzy_p.value + " 元 / 500g";
+            }
+        },
+        visualMap: {
+            left: "center",
+            bottom: 4,
+            min: 15,
+            max: 100,
+            orient: "horizontal",
+            itemWidth: 12,
+            itemHeight: 90,
+            text: ["高价", "低价"],
+            textStyle: { color: "#a7b3c9", fontSize: 11 },
+            calculable: true,
+            inRange: {
+                color: ["#2a3550", "#4d6390", "#5fd8c8", "#f2c97d", "#e2603f"]
+            }
+        },
+        series: [
+            {
+                name: "牛肉部位",
+                type: "map",
+                map: "Beef_cuts_France",
+                roam: true,
+                selectedMode: false,
+                layoutCenter: ["50%", "46%"],
+                layoutSize: "96%",
+                label: { show: false },
+                itemStyle: {
+                    borderColor: "rgba(255,255,255,.28)",
+                    borderWidth: 1,
+                    areaColor: "#2a3550"
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        color: "#ffffff",
+                        fontSize: 10,
+                        backgroundColor: "rgba(8,11,20,.72)",
+                        padding: [3, 6],
+                        borderRadius: 4
+                    },
+                    itemStyle: {
+                        areaColor: "#5fd8c8",
+                        borderColor: "#ffffff",
+                        borderWidth: 1.5
+                    }
+                },
+                data: lzy_beefData
+            }
+        ]
+    };
+
+    var lzy_pieOption = {
+        backgroundColor: "transparent",
+        color: ["#6d7cff", "#5fd8c8", "#f2c97d", "#c4b5fd", "#e2603f"],
+        tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(10,14,24,.92)",
+            borderColor: "rgba(242,201,125,.4)",
+            textStyle: { color: "#e6ecf8", fontSize: 12 },
+            formatter: "{b}<br/>平均参考价：{c} 元 / 500g<br/>占比：{d}%"
+        },
+        legend: {
+            bottom: 10,
+            left: "center",
+            icon: "circle",
+            itemWidth: 8,
+            itemHeight: 8,
+            itemGap: 14,
+            textStyle: { color: "#a7b3c9", fontSize: 11 }
+        },
+        series: [
+            {
+                name: "部位类别",
+                type: "pie",
+                radius: ["40%", "66%"],
+                center: ["50%", "44%"],
+                avoidLabelOverlap: true,
+                padAngle: 2,
+                itemStyle: {
+                    borderColor: "#0b0e17",
+                    borderWidth: 2,
+                    borderRadius: 6
+                },
+                label: {
+                    color: "#dfe6f5",
+                    fontSize: 11,
+                    lineHeight: 16,
+                    formatter: "{b}\n{d}%"
+                },
+                labelLine: {
+                    length: 10,
+                    length2: 12,
+                    lineStyle: { color: "rgba(255,255,255,.24)" }
+                },
+                emphasis: {
+                    scale: true,
+                    scaleSize: 6,
+                    label: { fontWeight: "bold" }
+                },
+                data: lzy_pieData
+            }
+        ]
+    };
+
+    lzy_pieChart.setOption(lzy_pieOption);
+
+    // 使用本地 SVG 地图字符串注册地图并渲染（直接双击打开页面也能正常显示）
+    if (window.lzy_beefMapSvg) {
+        echarts.registerMap("Beef_cuts_France", { svg: window.lzy_beefMapSvg });
+        lzy_mapChart.setOption(lzy_mapOption);
+    } else {
+        lzy_mapChart.setOption({
+            backgroundColor: "transparent",
+            title: {
+                text: "地图资源加载失败：未找到 cdn/Beef_cuts_France.js",
+                left: "center",
+                top: "middle",
+                textStyle: { color: "#8f9bb3", fontSize: 13, lineHeight: 24 }
+            }
+        });
+    }
+
+    // 视口变化时同步图表尺寸
+    window.addEventListener("resize", function () {
+        lzy_mapChart.resize();
+        lzy_pieChart.resize();
+    });
+</script>
+</body>
+</html>

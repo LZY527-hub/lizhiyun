@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-05  功能名称：18-6 Mermaid 智能客服系统流程图与 ER 图 -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-6 Mermaid 智能客服系统 · 李知芸</title>
+<style>
+    :root{
+        --lzy_bg:#05060b;
+        --lzy_panel:#0b1120;
+        --lzy_muted:#a7b3c9;
+        --lzy_c1:#6d7cff;
+        --lzy_c2:#5fd8c8;
+        --lzy_gold:#f2c97d;
+        --lzy_border:rgba(255,255,255,.09);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+        min-height:100vh;
+        background:
+            radial-gradient(1000px 700px at 4% -10%, rgba(109,124,255,.18) 0%, rgba(5,6,11,0) 60%),
+            radial-gradient(900px 680px at 102% 6%, rgba(242,201,125,.10) 0%, rgba(5,6,11,0) 58%),
+            radial-gradient(900px 760px at 50% 106%, rgba(95,216,200,.09) 0%, rgba(5,6,11,0) 60%),
+            var(--lzy_bg);
+        color:#fff;
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        line-height:1.6;
+        -webkit-font-smoothing:antialiased;
+        overflow-x:hidden;
+    }
+    body::before{
+        content:"";
+        position:fixed;inset:0;z-index:0;pointer-events:none;
+        background-image:
+            linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size:48px 48px;
+        -webkit-mask-image:radial-gradient(ellipse at 50% 18%, #000 30%, transparent 80%);
+        mask-image:radial-gradient(ellipse at 50% 18%, #000 30%, transparent 80%);
+    }
+
+    .lzy_wrap{
+        position:relative;z-index:1;
+        max-width:1220px;
+        margin:0 auto;
+        padding:26px 28px 56px;
+    }
+
+    /* ===== 顶部导航 ===== */
+    .lzy_topnav{
+        display:flex;align-items:center;justify-content:space-between;gap:16px;
+        margin-bottom:48px;
+    }
+    .lzy_back{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:8px 16px;
+        border:1px solid rgba(255,255,255,.14);
+        border-radius:999px;
+        background:rgba(255,255,255,.04);
+        backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);
+        color:#dfe6f5;text-decoration:none;
+        font-size:12px;letter-spacing:1px;
+        transition:background .25s ease,border-color .25s ease,transform .25s ease;
+    }
+    .lzy_back:hover{
+        background:rgba(255,255,255,.1);
+        border-color:rgba(109,124,255,.55);
+        transform:translateY(-1px);
+    }
+    .lzy_topTag{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;letter-spacing:3px;color:#8f9bb3;text-transform:uppercase;
+        white-space:nowrap;
+    }
+
+    /* ===== 标题区 ===== */
+    .lzy_hero{max-width:860px;margin-bottom:34px;}
+    .lzy_eyebrow{
+        display:flex;align-items:center;gap:12px;
+        margin-bottom:16px;
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;font-weight:600;letter-spacing:4px;
+        text-transform:uppercase;color:#8f9bb3;
+    }
+    .lzy_eyebrow::before{
+        content:"";width:34px;height:1px;
+        background:linear-gradient(90deg,var(--lzy_c1),transparent);
+    }
+    .lzy_title{
+        margin-bottom:16px;
+        font-size:clamp(30px,4.6vw,50px);
+        font-weight:800;letter-spacing:1px;line-height:1.14;
+        background:linear-gradient(94deg,#ffffff 18%,var(--lzy_gold) 96%);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .lzy_sub{
+        max-width:720px;
+        font-size:14px;line-height:2;color:var(--lzy_muted);
+    }
+    .lzy_tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;list-style:none;}
+    .lzy_tags li{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:6px 13px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:999px;
+        background:rgba(255,255,255,.03);
+        font-size:12px;color:#c3cde0;letter-spacing:.5px;
+    }
+    .lzy_tags i{width:6px;height:6px;border-radius:50%;background:var(--lzy_c1);}
+    .lzy_tags li:nth-child(2) i{background:var(--lzy_c2);}
+    .lzy_tags li:nth-child(3) i{background:var(--lzy_gold);}
+
+    /* ===== 图卡片 ===== */
+    .lzy_card{
+        position:relative;
+        margin-bottom:24px;
+        padding:24px 26px 22px;
+        border:1px solid var(--lzy_border);
+        border-radius:20px;
+        background:linear-gradient(160deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.018) 52%, rgba(255,255,255,.008) 100%);
+        box-shadow:0 24px 60px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.07);
+        overflow:hidden;
+    }
+    .lzy_card::after{
+        content:"";
+        position:absolute;top:-100px;right:-80px;
+        width:240px;height:240px;border-radius:50%;
+        background:radial-gradient(circle, rgba(109,124,255,.16), transparent 68%);
+        pointer-events:none;
+    }
+    .lzy_card:nth-of-type(2)::after{
+        background:radial-gradient(circle, rgba(95,216,200,.14), transparent 68%);
+    }
+    .lzy_cardHead{
+        position:relative;z-index:1;
+        display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+        padding-bottom:16px;margin-bottom:18px;
+        border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .lzy_cardTitle{
+        display:flex;align-items:center;gap:10px;
+        font-size:18px;font-weight:600;letter-spacing:.5px;color:#fff;
+    }
+    .lzy_cardTitle::before{
+        content:"";
+        width:3px;height:16px;border-radius:2px;
+        background:linear-gradient(180deg,var(--lzy_c1),rgba(109,124,255,.15));
+    }
+    .lzy_card:nth-of-type(2) .lzy_cardTitle::before{
+        background:linear-gradient(180deg,var(--lzy_c2),rgba(95,216,200,.15));
+    }
+    .lzy_cardDesc{
+        margin-top:7px;
+        font-size:11.5px;line-height:1.9;color:#8f9bb3;letter-spacing:.3px;
+    }
+    .lzy_badge{
+        flex:none;
+        padding:4px 11px;
+        border:1px solid rgba(109,124,255,.35);
+        border-radius:999px;
+        background:rgba(109,124,255,.1);
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:9px;letter-spacing:2px;color:#aab6ff;text-transform:uppercase;
+    }
+    .lzy_card:nth-of-type(2) .lzy_badge{
+        border-color:rgba(95,216,200,.38);
+        background:rgba(95,216,200,.1);
+        color:#8ff0e4;
+    }
+
+    /* ===== Mermaid 容器 ===== */
+    .lzy_canvasBox{
+        position:relative;z-index:1;
+        display:flex;justify-content:center;
+        padding:18px 8px 8px;
+        border-radius:14px;
+        background:rgba(4,8,16,.55);
+        border:1px solid rgba(255,255,255,.05);
+        overflow:auto;
+    }
+    .lzy_mermaid{
+        min-width:min-content;
+        margin:0 auto;
+        text-align:center;
+    }
+    .lzy_mermaid svg{
+        max-width:none !important;
+        height:auto !important;
+    }
+    /* ER 图较宽时等比缩小，保证完整可见 */
+    .lzy_mermaidEr svg{
+        max-width:100% !important;
+        height:auto !important;
+    }
+    .lzy_canvasBox::-webkit-scrollbar{height:8px;width:8px;}
+    .lzy_canvasBox::-webkit-scrollbar-thumb{
+        background:rgba(109,124,255,.35);border-radius:8px;
+    }
+    .lzy_canvasBox::-webkit-scrollbar-track{background:transparent;}
+
+    .lzy_hint{
+        position:relative;z-index:1;
+        margin-top:12px;
+        font-size:11px;letter-spacing:.5px;color:#6f7b92;
+        text-align:right;
+    }
+
+    /* ===== 流程图 + 说明双栏 ===== */
+    .lzy_flowBody{
+        position:relative;z-index:1;
+        display:grid;
+        grid-template-columns:minmax(0,1.45fr) minmax(250px,.85fr);
+        gap:20px;
+        align-items:start;
+    }
+    .lzy_notes{display:flex;flex-direction:column;gap:12px;}
+    .lzy_noteItem{
+        padding:14px 16px;
+        border:1px solid rgba(255,255,255,.07);
+        border-radius:12px;
+        background:rgba(255,255,255,.03);
+    }
+    .lzy_noteItem h3{
+        display:flex;align-items:center;gap:8px;
+        font-size:13px;font-weight:600;letter-spacing:.5px;color:#e8eefb;
+    }
+    .lzy_noteItem h3::before{
+        content:"";
+        width:5px;height:5px;border-radius:50%;
+        background:var(--lzy_c1);
+        box-shadow:0 0 8px rgba(109,124,255,.9);
+    }
+    .lzy_noteItem:nth-child(2) h3::before{background:var(--lzy_c2);box-shadow:0 0 8px rgba(95,216,200,.9);}
+    .lzy_noteItem:nth-child(3) h3::before{background:var(--lzy_gold);box-shadow:0 0 8px rgba(242,201,125,.9);}
+    .lzy_noteItem:nth-child(4) h3::before{background:#e2603f;box-shadow:0 0 8px rgba(226,96,63,.9);}
+    .lzy_noteItem p{
+        margin-top:7px;
+        font-size:11.5px;line-height:1.9;color:#8f9bb3;
+    }
+
+    /* ===== 页脚 ===== */
+    .lzy_footer{
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        margin-top:36px;padding-top:20px;
+        border-top:1px solid rgba(255,255,255,.07);
+        font-size:11px;letter-spacing:.8px;color:#5f6b82;
+    }
+    .lzy_footer a{color:#8f9bb3;text-decoration:none;transition:color .2s ease;}
+    .lzy_footer a:hover{color:#fff;}
+
+    @media (max-width:980px){
+        .lzy_wrap{padding:22px 18px 44px;}
+        .lzy_card{padding:18px 16px;}
+        .lzy_flowBody{grid-template-columns:1fr;}
+        .lzy_footer{flex-direction:column;align-items:flex-start;gap:8px;}
+    }
+</style>
+</head>
+<body>
+<div class="lzy_wrap">
+    <nav class="lzy_topnav">
+        <a class="lzy_back" href="index.html">← 返回首页</a>
+        <span class="lzy_topTag">Mermaid · Diagram as Code</span>
+    </nav>
+
+    <header class="lzy_hero">
+        <p class="lzy_eyebrow">18-6 / Mermaid Practice</p>
+        <h1 class="lzy_title">智能客服系统<br>流程图与 ER 图</h1>
+        <p class="lzy_sub">
+            使用本地引入的 Mermaid 11，以“图即代码”的方式描述知识库智能客服系统：一张流程图说明从用户提问、
+            意图识别、知识库检索到转人工的完整业务链路；一张 ER 图描述用户、会话、消息、意图与知识库之间的实体关系。
+        </p>
+        <ul class="lzy_tags">
+            <li><i></i>flowchart TD</li>
+            <li><i></i>erDiagram</li>
+            <li><i></i>本地 cdn 资源</li>
+        </ul>
+    </header>
+
+    <main>
+    <section class="lzy_card">
+        <div class="lzy_cardHead">
+            <div>
+                <h2 class="lzy_cardTitle">智能客服系统流程图</h2>
+                <p class="lzy_cardDesc">
+                    覆盖接入网关、意图识别、知识库检索、答案生成、满意度判断与人工工单流转，图中
+                    “召回置信度不足” 与 “用户不满意” 两个分支都会进入转人工环节。
+                </p>
+            </div>
+            <span class="lzy_badge">Flowchart</span>
+        </div>
+        <div class="lzy_flowBody">
+        <div class="lzy_canvasBox">
+                <div class="lzy_mermaid">
+flowchart TD
+    LZY_A["用户发起咨询<br/>网页 · 微信 · APP"] --> LZY_B["接入网关<br/>建立会话"]
+    LZY_B --> LZY_C{"意图识别 NLU"}
+    LZY_C -->|业务问题| LZY_D["知识库检索<br/>向量 + 关键词"]
+    LZY_C -->|闲聊寒暄| LZY_G["答案生成<br/>模板 + 大模型"]
+    LZY_C -->|无法识别| LZY_L["转人工坐席"]
+    LZY_D --> LZY_F{"置信度 ≥ 0.75"}
+    LZY_F -->|是| LZY_G
+    LZY_F -->|否| LZY_H["澄清追问<br/>补全关键信息"]
+    LZY_H --> LZY_D
+    LZY_G --> LZY_I["回复用户"]
+    LZY_I --> LZY_J{"用户是否满意"}
+    LZY_J -->|满意| LZY_K["会话归档<br/>日志与知识沉淀"]
+    LZY_J -->|不满意| LZY_L
+    LZY_L --> LZY_M["人工处理<br/>工单派发与回访"]
+    LZY_M --> LZY_K
+    LZY_K --> LZY_N(["结束"])
+                </div>
+        </div>
+        <aside class="lzy_notes">
+            <div class="lzy_noteItem">
+                <h3>意图识别</h3>
+                <p>将用户输入送入 NLU 模型，输出业务问题、闲聊寒暄、无法识别三类意图，并给出置信度。</p>
+            </div>
+            <div class="lzy_noteItem">
+                <h3>知识库检索</h3>
+                <p>业务问题先做向量召回，再叠加关键词匹配，取 Top-N 知识条目作为答案素材。</p>
+            </div>
+            <div class="lzy_noteItem">
+                <h3>置信度阈值</h3>
+                <p>召回结果置信度低于 0.75 时不直接作答，转为澄清追问补全槽位，避免答非所问。</p>
+            </div>
+            <div class="lzy_noteItem">
+                <h3>转人工兜底</h3>
+                <p>意图无法识别或用户明确不满意时，生成工单派发给人工坐席，处理完成后回写会话归档。</p>
+            </div>
+        </aside>
+        </div>
+        <p class="lzy_hint">流程图源码使用 Mermaid flowchart 语法编写，由浏览器端实时渲染为 SVG</p>
+    </section>
+
+    <section class="lzy_card">
+        <div class="lzy_cardHead">
+            <div>
+                <h2 class="lzy_cardTitle">智能客服系统 ER 图</h2>
+                <p class="lzy_cardDesc">
+                    以用户、会话、消息为核心实体，串联意图标签、知识库分类与条目、满意度评价以及人工工单，
+                    用一对多 / 多对一关系体现客服数据的流转过程。
+                </p>
+            </div>
+            <span class="lzy_badge">ER Diagram</span>
+        </div>
+        <div class="lzy_canvasBox">
+            <div class="lzy_mermaid lzy_mermaidEr">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--o{ MESSAGE : "包含"
+    SESSION ||--o{ FEEDBACK : "评价"
+    SESSION ||--o{ TICKET : "升级"
+    MESSAGE }o--|| INTENT : "命中"
+    INTENT ||--o{ KB_ARTICLE : "关联"
+
+    USER {
+        string user_id PK "用户标识"
+        string nickname "昵称"
+        string channel "来源渠道"
+    }
+    SESSION {
+        string session_id PK "会话标识"
+        string user_id FK "所属用户"
+        string state "会话状态"
+    }
+    MESSAGE {
+        string message_id PK "消息标识"
+        string session_id FK "所属会话"
+        string content "消息内容"
+    }
+    INTENT {
+        string intent_id PK "意图标识"
+        string intent_name "意图名称"
+        float confidence "置信度"
+    }
+    KB_ARTICLE {
+        string article_id PK "知识条目标识"
+        string title "条目标题"
+        int hit_count "命中次数"
+    }
+    FEEDBACK {
+        string feedback_id PK "评价标识"
+        string session_id FK "所属会话"
+        int score "满意度评分"
+    }
+    TICKET {
+        string ticket_id PK "工单标识"
+        string session_id FK "关联会话"
+        string status "工单状态"
+    }
+            </div>
+        </div>
+        <p class="lzy_hint">ER 图源码使用 Mermaid erDiagram 语法编写，实体属性含主键 PK 与外键 FK 标注</p>
+    </section>
+    </main>
+
+    <footer class="lzy_footer">
+        <span>《高级网页设计I》18-6 · 李知芸 · 2026-11-05</span>
+        <span><a href="18-4.html">18-4 ECharts</a> · <a href="18-3.html">18-3 SVG 架构图</a></span>
+    </footer>
+</div>
+
+<script src="./cdn/mermaid.min.js"></script>
+<script>
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: "dark",
+        securityLevel: "loose",
+        fontFamily: '"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif',
+        themeVariables: {
+            darkMode: true,
+            background: "#05060b",
+            primaryColor: "#131c30",
+            primaryTextColor: "#e8eefb",
+            primaryBorderColor: "#3d4f74",
+            secondaryColor: "#18233c",
+            tertiaryColor: "#0c1322",
+            mainBkg: "#101827",
+            nodeBorder: "#4a5b7d",
+            clusterBkg: "#0a1120",
+            lineColor: "#6d7cff",
+            textColor: "#dfe6f5",
+            edgeLabelBackground: "#0a1120",
+            titleColor: "#ffffff",
+            attributeBackgroundColorEven: "#0f1728",
+            attributeBackgroundColorOdd: "#121b2e",
+            fontSize: "13px"
+        },
+        flowchart: {
+            curve: "linear",
+            padding: 8,
+            nodeSpacing: 28,
+            rankSpacing: 36,
+            useMaxWidth: false
+        },
+        er: {
+            layoutDirection: "TB",
+            diagramPadding: 10,
+            entityPadding: 10,
+            useMaxWidth: false
+        }
+    });
+
+    mermaid.run({
+        nodes: document.querySelectorAll(".lzy_mermaid")
+    }).catch(function (lzy_err) {
+        console.error("Mermaid 渲染失败：", lzy_err);
+    });
+</script>
+</body>
+</html>

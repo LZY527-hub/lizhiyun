@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<!-- 姓名：李知芸  日期：2026-11-05  功能名称：18-3 SVG 知识库智能客服系统架构图（科研方向） -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-3 SVG 知识库智能客服系统架构图 · 李知芸</title>
+<style>
+    :root{
+        --lzy_bg:#05060b;
+        --lzy_ink:#ffffff;
+        --lzy_muted:#a7b3c9;
+        --lzy_c1:#6d7cff;
+        --lzy_c2:#5fd8c8;
+        --lzy_c3:#c4b5fd;
+        --lzy_border:rgba(255,255,255,.09);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+        min-height:100vh;
+        background:
+            radial-gradient(1000px 720px at 6% -12%, rgba(109,124,255,.18) 0%, rgba(5,6,11,0) 60%),
+            radial-gradient(900px 700px at 102% 8%, rgba(95,216,200,.10) 0%, rgba(5,6,11,0) 55%),
+            radial-gradient(900px 800px at 50% 108%, rgba(138,110,255,.10) 0%, rgba(5,6,11,0) 62%),
+            var(--lzy_bg);
+        color:var(--lzy_ink);
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        line-height:1.6;
+        -webkit-font-smoothing:antialiased;
+        text-rendering:optimizeLegibility;
+        overflow-x:hidden;
+    }
+    body::before{
+        content:"";
+        position:fixed;inset:0;z-index:0;pointer-events:none;
+        background-image:
+            linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+        background-size:48px 48px;
+        -webkit-mask-image:radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%);
+        mask-image:radial-gradient(ellipse at 50% 20%, #000 30%, transparent 80%);
+    }
+
+    .lzy_wrap{
+        position:relative;z-index:1;
+        max-width:1240px;
+        margin:0 auto;
+        padding:26px 28px 56px;
+    }
+
+    /* ===== 顶部导航 ===== */
+    .lzy_topnav{
+        display:flex;align-items:center;justify-content:space-between;gap:16px;
+        margin-bottom:56px;
+    }
+    .lzy_back{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:8px 16px;
+        border:1px solid rgba(255,255,255,.14);
+        border-radius:999px;
+        background:rgba(255,255,255,.04);
+        backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);
+        color:#dfe6f5;text-decoration:none;
+        font-size:12px;letter-spacing:1px;
+        transition:background .25s ease,border-color .25s ease,transform .25s ease;
+    }
+    .lzy_back:hover{
+        background:rgba(255,255,255,.1);
+        border-color:rgba(196,181,253,.55);
+        transform:translateY(-1px);
+    }
+    .lzy_topTag{
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;letter-spacing:3px;color:#8f9bb3;text-transform:uppercase;
+        white-space:nowrap;
+    }
+
+    /* ===== 标题区 ===== */
+    .lzy_hero{max-width:860px;margin-bottom:34px;}
+    .lzy_eyebrow{
+        display:flex;align-items:center;gap:12px;
+        margin-bottom:16px;
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;font-weight:600;letter-spacing:4px;
+        text-transform:uppercase;color:#8f9bb3;
+    }
+    .lzy_eyebrow::before{
+        content:"";width:34px;height:1px;
+        background:linear-gradient(90deg,var(--lzy_c1),transparent);
+    }
+    .lzy_title{
+        margin-bottom:16px;
+        font-size:clamp(30px,4.6vw,52px);
+        font-weight:800;letter-spacing:1px;line-height:1.12;
+        background:linear-gradient(94deg,#ffffff 18%,var(--lzy_c3) 94%);
+        -webkit-background-clip:text;background-clip:text;
+        -webkit-text-fill-color:transparent;color:transparent;
+    }
+    .lzy_sub{
+        font-size:14px;line-height:2;color:var(--lzy_muted);
+    }
+
+    /* ===== 图例 ===== */
+    .lzy_legend{
+        display:flex;flex-wrap:wrap;gap:8px;
+        margin-top:22px;list-style:none;
+    }
+    .lzy_legend li{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:6px 13px;
+        border:1px solid rgba(255,255,255,.08);
+        border-radius:999px;
+        background:rgba(255,255,255,.03);
+        font-size:12px;color:#c3cde0;letter-spacing:.5px;
+    }
+    .lzy_legend i{
+        width:7px;height:7px;border-radius:50%;
+        background:var(--lzy_c);
+        box-shadow:0 0 10px var(--lzy_c);
+    }
+
+    /* ===== SVG 画布容器 ===== */
+    .lzy_stage{
+        position:relative;
+        margin-top:30px;
+        padding:10px;
+        border:1px solid var(--lzy_border);
+        border-radius:22px;
+        background:
+            radial-gradient(700px 340px at 14% 0%, rgba(109,124,255,.10), transparent 68%),
+            radial-gradient(700px 340px at 88% 100%, rgba(95,216,200,.07), transparent 68%),
+            linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.008));
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 40px 90px -70px #000;
+        overflow:hidden;
+    }
+    .lzy_stage::before{
+        content:"";
+        position:absolute;inset:0;
+        border-radius:22px;pointer-events:none;
+        background-image:
+            linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+        background-size:32px 32px;
+        -webkit-mask-image:radial-gradient(ellipse at 50% 30%, #000 45%, transparent 88%);
+        mask-image:radial-gradient(ellipse at 50% 30%, #000 45%, transparent 88%);
+    }
+    #lzy_svg{
+        position:relative;
+        display:block;
+        width:100%;
+        font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+        cursor:default;
+    }
+
+    /* ===== SVG 节点交互 ===== */
+    .lzy_node{transition:opacity .22s ease;}
+    .lzy_node rect{transition:stroke-width .22s ease,fill .22s ease;}
+    .lzy_node text{transition:fill .22s ease;}
+    .lzy_node.lzy_active rect{stroke-width:1.6;}
+    .lzy_node.lzy_active text{fill:#ffffff;}
+    .lzy_node.lzy_active{filter:drop-shadow(0 0 10px var(--lzy_c));}
+
+    /* ===== 连线流动 ===== */
+    .lzy_flow{
+        stroke-dasharray:5 7;
+        animation:lzyFlow 1.8s linear infinite;
+    }
+    .lzy_loop{
+        stroke-dasharray:3 6;
+        animation:lzyFlow 2.4s linear infinite reverse;
+    }
+    @keyframes lzyFlow{
+        to{stroke-dashoffset:-24;}
+    }
+    @media (prefers-reduced-motion:reduce){
+        .lzy_flow,.lzy_loop{animation:none;}
+    }
+
+    /* ===== 节点说明浮层 ===== */
+    .lzy_tipbox{
+        position:absolute;left:0;top:0;z-index:6;
+        max-width:300px;
+        padding:12px 15px 13px;
+        border:1px solid rgba(255,255,255,.16);
+        border-radius:12px;
+        background:rgba(9,12,22,.97);
+        box-shadow:0 18px 40px rgba(0,0,0,.6);
+        opacity:0;
+        transform:translate(-50%,-100%) translateY(-12px);
+        transition:opacity .2s ease;
+        pointer-events:none;
+    }
+    .lzy_tipbox.lzy_show{opacity:1;}
+    .lzy_tipbox.lzy_below{transform:translate(-50%,0) translateY(12px);}
+    .lzy_tipbox h4{
+        font-size:13px;font-weight:600;letter-spacing:.5px;
+        margin-bottom:6px;
+    }
+    .lzy_tipbox p{
+        font-size:12px;line-height:1.8;color:#b8c4da;
+    }
+    .lzy_tip{
+        margin-top:14px;
+        text-align:center;
+        font-size:12px;letter-spacing:.5px;color:#7f8ba3;
+    }
+    .lzy_noscript{
+        margin-top:18px;
+        padding:14px 18px;
+        border:1px solid rgba(255,180,120,.35);
+        border-radius:12px;
+        background:rgba(255,180,120,.08);
+        color:#ffd9b0;font-size:13px;
+    }
+
+    /* ===== 科研方向 ===== */
+    .lzy_sectionHead{
+        margin-top:56px;
+        margin-bottom:20px;
+    }
+    .lzy_sectionTitle{
+        display:flex;align-items:center;gap:12px;
+        font-size:20px;font-weight:700;letter-spacing:2px;color:#fff;
+    }
+    .lzy_sectionTitle::before{
+        content:"";width:3px;height:18px;border-radius:2px;
+        background:linear-gradient(180deg,var(--lzy_c1),var(--lzy_c2));
+    }
+    .lzy_sectionSub{
+        margin-top:8px;margin-left:15px;
+        font-size:12.5px;color:#8f9bb3;letter-spacing:.5px;
+    }
+    .lzy_notes{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:16px;
+    }
+    .lzy_note{
+        position:relative;
+        padding:24px 24px 26px;
+        border:1px solid var(--lzy_border);
+        border-radius:16px;
+        background:rgba(255,255,255,.035);
+        overflow:hidden;
+        transition:border-color .3s ease,background .3s ease,transform .3s ease;
+    }
+    .lzy_note:hover{
+        transform:translateY(-3px);
+        border-color:rgba(196,181,253,.38);
+        background:rgba(255,255,255,.055);
+    }
+    .lzy_note::before{
+        content:"";
+        position:absolute;left:0;top:0;bottom:0;width:2px;
+        background:linear-gradient(180deg,var(--lzy_c1),var(--lzy_c2));
+        opacity:.7;
+    }
+    .lzy_noteIdx{
+        display:block;
+        margin-bottom:10px;
+        font-family:ui-monospace,"SF Mono","Consolas",monospace;
+        font-size:10px;letter-spacing:2px;color:#7f8ba3;
+    }
+    .lzy_note h3{
+        font-size:14px;letter-spacing:1px;font-weight:600;
+        color:var(--lzy_c3);margin-bottom:10px;
+    }
+    .lzy_note p{
+        font-size:13px;line-height:1.95;color:var(--lzy_muted);
+    }
+
+    /* ===== 页脚 ===== */
+    .lzy_footer{
+        display:flex;align-items:center;justify-content:space-between;gap:16px;
+        margin-top:56px;padding-top:22px;
+        border-top:1px solid rgba(255,255,255,.07);
+        font-size:12px;color:#7f8ba3;letter-spacing:1px;
+    }
+    .lzy_footer a{
+        color:#c3cde0;text-decoration:none;
+        transition:color .25s ease;
+    }
+    .lzy_footer a:hover{color:#fff;}
+
+    @media (max-width:900px){
+        .lzy_notes{grid-template-columns:1fr 1fr;}
+        .lzy_wrap{padding:20px 18px 40px;}
+        .lzy_topnav{margin-bottom:40px;}
+        .lzy_title{font-size:clamp(28px,8vw,40px);}
+    }
+    @media (max-width:560px){
+        .lzy_wrap{padding:18px 12px 36px;}
+        .lzy_stage{padding:6px;border-radius:16px;}
+        .lzy_stage::before{border-radius:16px;}
+        .lzy_notes{grid-template-columns:1fr;}
+        .lzy_topTag{display:none;}
+        .lzy_footer{flex-direction:column;align-items:flex-start;gap:8px;}
+        .lzy_sub{font-size:13px;}
+    }
+</style>
+</head>
+<body>
+<div class="lzy_wrap">
+    <nav class="lzy_topnav">
+        <a class="lzy_back" href="index.html">← 返回首页</a>
+        <span class="lzy_topTag">18-3 · SVG System Architecture</span>
+    </nav>
+
+    <header class="lzy_hero">
+        <p class="lzy_eyebrow">SVG · Knowledge Base QA Architecture</p>
+        <h1 class="lzy_title">知识库智能客服系统架构</h1>
+        <p class="lzy_sub">以知识库为事实底座、以检索增强生成为推理链路的七层架构：用户请求经接入与会话层理解后，进入混合检索与重排序，把可信证据交给领域大模型生成带引用的答案；最后一层是科研评估闭环，用离线基准与在线实验反过来校准检索策略、分块粒度与提示模板。整张图由 SVG 元素手工生成，支持悬停查看模块职责。</p>
+        <ul class="lzy_legend">
+            <li><i style="--lzy_c:#7cc4ff"></i>用户交互层</li>
+            <li><i style="--lzy_c:#5fd8c8"></i>接入与会话层</li>
+            <li><i style="--lzy_c:#a78bfa"></i>检索增强层</li>
+            <li><i style="--lzy_c:#f0b86e"></i>生成与决策层</li>
+            <li><i style="--lzy_c:#f472b6"></i>知识库层</li>
+            <li><i style="--lzy_c:#94a3b8"></i>数据与算力层</li>
+            <li><i style="--lzy_c:#a3e635"></i>科研评估层</li>
+        </ul>
+    </header>
+
+    <section class="lzy_stage" id="lzy_stage">
+        <svg id="lzy_svg" role="img" aria-label="知识库智能客服系统架构图：用户交互层包含 Web 客服窗口、App 小程序、电话语音通道与人工坐席工作台；接入与会话层包含统一接入网关、会话状态管理、意图识别与槽位、安全与合规审核；检索增强层包含查询理解与改写、混合检索、重排序 Reranker、证据组装、证据充分性判定；生成与决策层包含领域大模型、Prompt 编排、工具调用、转人工决策；知识库层包含多源文档采集、解析与清洗、语义分块、向量化 Embedding、知识图谱构建、索引与版本管理；数据与算力层包含向量数据库、关系数据库、对象存储、GPU 推理集群、缓存与消息队列；科研评估层包含评测数据集构建、自动评测指标、消融与对比实验、幻觉与可解释性、在线 A/B 实验。右侧虚线为评估反馈闭环。"></svg>
+        <div class="lzy_tipbox" id="lzy_tip"></div>
+    </section>
+    <p class="lzy_tip">鼠标悬停模块查看职责说明 · 单击锁定说明</p>
+    <noscript><p class="lzy_noscript">本页使用 JavaScript 生成 SVG 架构图，请开启 JavaScript 后查看。</p></noscript>
+
+    <section>
+        <header class="lzy_sectionHead">
+            <h2 class="lzy_sectionTitle">科研方向</h2>
+            <p class="lzy_sectionSub">围绕架构中的关键环节，可延展的研究问题与实验设计。</p>
+        </header>
+        <div class="lzy_notes">
+            <article class="lzy_note">
+                <span class="lzy_noteIdx">RESEARCH 01</span>
+                <h3>检索增强生成（RAG）</h3>
+                <p>研究混合检索的权重配比、分块粒度与重排序模型对答案准确率的影响，并探索按问题类型自适应选择检索路径的路由机制。</p>
+            </article>
+            <article class="lzy_note">
+                <span class="lzy_noteIdx">RESEARCH 02</span>
+                <h3>知识表示与图谱推理</h3>
+                <p>面向客服领域构建实体—关系—属性图谱，研究图谱结构化查询与向量检索的融合，使事实类问题可推演、可追溯。</p>
+            </article>
+            <article class="lzy_note">
+                <span class="lzy_noteIdx">RESEARCH 03</span>
+                <h3>多模态知识理解</h3>
+                <p>产品手册中的表格、截图与流程图是高频知识形态，研究版面解析与图文联合嵌入，提升复杂文档的召回与理解质量。</p>
+            </article>
+            <article class="lzy_note">
+                <span class="lzy_noteIdx">RESEARCH 04</span>
+                <h3>可信生成与幻觉抑制</h3>
+                <p>以引用溯源、事实一致性校验与证据充分性判定为抓手，研究"证据不足即拒答或转人工"的可信边界与判定阈值。</p>
+            </article>
+            <article class="lzy_note">
+                <span class="lzy_noteIdx">RESEARCH 05</span>
+                <h3>智能体自主服务</h3>
+                <p>从单轮问答走向任务型智能体，研究多工具规划、执行与反思机制，支撑退换货、改地址等需要闭环操作的服务场景。</p>
+            </article>
+            <article class="lzy_note">
+                <span class="lzy_noteIdx">RESEARCH 06</span>
+                <h3>评测基准与持续学习</h3>
+                <p>构建领域问答基准与对抗难例集，结合线上反馈开展持续微调与知识增量更新，形成"评估—反馈—迭代"的闭环。</p>
+            </article>
+        </div>
+    </section>
+
+    <footer class="lzy_footer">
+        <a href="index.html">← 返回首页</a>
+        <span>李知芸 · 527 · 计算机24005</span>
+    </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    var lzy_svg = document.getElementById("lzy_svg");
+    var lzy_stage = document.getElementById("lzy_stage");
+    var lzy_tipBox = document.getElementById("lzy_tip");
+
+    var lzy_FONT = '"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif';
+
+    /* ===== 架构数据 ===== */
+    var lzy_layers = [
+        {
+            name: "用户交互层", en: "USER INTERACTION", color: "#7cc4ff",
+            nodes: [
+                { t: "Web 客服窗口", d: "网页端在线客服对话框，承载图文、富媒体消息与快捷问询。" },
+                { t: "App / 小程序", d: "移动端入口，支持拍照上传与语音提问，覆盖售前与售后场景。" },
+                { t: "电话语音通道", d: "接入 ASR 语音转写与 TTS 播报，服务不习惯打字的用户。" },
+                { t: "人工坐席工作台", d: "转人工后接管会话，可查看完整上下文与系统推荐答案。" }
+            ]
+        },
+        {
+            name: "接入与会话层", en: "ACCESS & SESSION", color: "#5fd8c8",
+            nodes: [
+                { t: "统一接入网关", d: "多渠道统一入口，负责协议转换、限流、鉴权与会话路由。" },
+                { t: "会话状态管理", d: "维护多轮上下文、用户画像与历史消息，保证对话连贯。" },
+                { t: "意图识别与槽位", d: "判断用户诉求类型，并抽取订单号、时间、商品等关键槽位。" },
+                { t: "安全与合规审核", d: "敏感词过滤、个人信息脱敏与内容安全兜底。" }
+            ]
+        },
+        {
+            name: "检索增强层", en: "RETRIEVAL · RAG", color: "#a78bfa",
+            nodes: [
+                { t: "查询理解与改写", d: "指代消解与查询扩展，把口语化问题改写成检索友好的表达。" },
+                { t: "混合检索", d: "向量语义召回与 BM25 关键词召回并行，兼顾语义与精确匹配。" },
+                { t: "重排序 Reranker", d: "交叉编码器对候选片段精排，显著提升 Top-K 的相关性。" },
+                { t: "证据组装", d: "去冗余、按相关性拼接上下文，并为每段证据标注来源。" },
+                { t: "证据充分性判定", d: "检索置信度不足时触发澄清追问或转人工，避免凭空作答。" }
+            ]
+        },
+        {
+            name: "生成与决策层", en: "GENERATION & DECISION", color: "#f0b86e",
+            nodes: [
+                { t: "领域大模型", d: "基座模型经客服语料微调与偏好对齐，负责答案生成。" },
+                { t: "Prompt 编排", d: "统一系统提示、角色约束与引用格式，控制输出风格与边界。" },
+                { t: "工具调用", d: "订单、物流、退款等业务 API 的函数调用与结果融合。" },
+                { t: "转人工决策", d: "结合置信度、情绪与业务规则判断是否交由人工坐席处理。" }
+            ]
+        },
+        {
+            name: "知识库层", en: "KNOWLEDGE BASE", color: "#f472b6",
+            nodes: [
+                { t: "多源文档采集", d: "产品手册、FAQ、历史工单与网页文档统一汇入知识底座。" },
+                { t: "解析与清洗", d: "PDF / Word / HTML 结构化解析，去噪并还原段落与表格。" },
+                { t: "语义分块", d: "按标题层级与语义边界切分，附带业务标签与元数据。" },
+                { t: "向量化 Embedding", d: "领域适配的嵌入模型把知识片段编码为稠密向量。" },
+                { t: "知识图谱构建", d: "实体关系抽取，为事实类问题提供结构化查询与推理能力。" },
+                { t: "索引与版本管理", d: "增量索引、版本快照与灰度发布，保证知识可回滚。" }
+            ]
+        },
+        {
+            name: "数据与算力层", en: "DATA & COMPUTE", color: "#94a3b8",
+            nodes: [
+                { t: "向量数据库", d: "存储并检索千万级向量片段，支持元数据过滤与多路召回。" },
+                { t: "关系数据库", d: "会话、工单与业务数据的持久化与事务管理。" },
+                { t: "对象存储", d: "原始文档、附件与多模态素材的统一存储。" },
+                { t: "GPU 推理集群", d: "模型推理、嵌入计算与批量离线任务的算力底座。" },
+                { t: "缓存与消息队列", d: "热点答案缓存、异步索引任务与流量削峰。" }
+            ]
+        },
+        {
+            name: "科研评估层", en: "RESEARCH & EVALUATION", color: "#a3e635",
+            nodes: [
+                { t: "评测数据集构建", d: "面向客服场景构建单轮、多轮与对抗难例的问答基准集。" },
+                { t: "自动评测指标", d: "Recall@K、MRR、忠实度与答案相关性等指标的自动计算。" },
+                { t: "消融与对比实验", d: "对比分块粒度、检索策略与模型规模对效果的边际影响。" },
+                { t: "幻觉与可解释性", d: "引用溯源、事实一致性检测与错误案例的归因分析。" },
+                { t: "在线 A/B 实验", d: "灰度流量验证离线指标与线上满意度的一致性。" }
+            ]
+        }
+    ];
+
+    var lzy_state = {
+        W: 0, H: 0, bands: [], nodes: [],
+        hover: null, pinned: null
+    };
+
+    /* 文字测量用的离屏画布 */
+    var lzy_measureCtx = document.createElement("canvas").getContext("2d");
+
+    function lzy_textW(text, fs, weight) {
+        lzy_measureCtx.font = (weight || 600) + " " + fs + "px " + lzy_FONT;
+        return lzy_measureCtx.measureText(text).width;
+    }
+
+    function lzy_rgba(hex, a) {
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    }
+
+    /* ===== 布局：按容器宽度重排每层模块 ===== */
+    function lzy_layout(W) {
+        var padX = W < 520 ? 14 : 24;
+        var hasLoop = W >= 760;
+        var loopGutter = hasLoop ? 62 : 0;
+        var avail = Math.max(220, W - padX * 2 - loopGutter);
+        var baseFs = W < 560 ? 11.5 : (W < 900 ? 12.5 : 13);
+        var nodeH = W < 560 ? 40 : 44;
+        var gapX = 8;
+        var gapY = 8;
+        var labelBlock = 42;
+        var bandPadBottom = 12;
+        var bandGap = W < 560 ? 32 : 40;
+        var maxNodeW = 236;
+
+        var bands = [];
+        var nodes = [];
+        var y = 18;
+        var l, k;
+
+        for (l = 0; l < lzy_layers.length; l++) {
+            var layer = lzy_layers[l];
+            var list = layer.nodes;
+            var n = list.length;
+
+            var maxW = 0;
+            for (k = 0; k < n; k++) {
+                var tw = lzy_textW(list[k].t, baseFs, 600);
+                if (tw > maxW) maxW = tw;
+            }
+
+            var reqW = Math.max(78, maxW + (W < 560 ? 18 : 26));
+            var maxCols = Math.max(1, Math.floor((avail + gapX) / (reqW + gapX)));
+            var cols = Math.min(n, maxCols);
+            var rows = Math.ceil(n / cols);
+            if (rows > 1) {
+                cols = Math.ceil(n / rows);
+                rows = Math.ceil(n / cols);
+            }
+
+            var nodeW = (avail - gapX * (cols - 1)) / cols;
+            if (nodeW > maxNodeW) nodeW = maxNodeW;
+
+            var bandH = labelBlock + rows * nodeH + (rows - 1) * gapY + bandPadBottom;
+            bands.push({
+                layer: layer, x: padX, y: y, w: avail, h: bandH,
+                rows: rows, cols: cols, index: l
+            });
+
+            for (k = 0; k < n; k++) {
+                var r = Math.floor(k / cols);
+                var c = k % cols;
+                var rowCount = Math.min(cols, n - r * cols);
+                var rowW = rowCount * nodeW + (rowCount - 1) * gapX;
+                var startX = padX + (avail - rowW) / 2;
+
+                var fs = baseFs;
+                while (fs > 9.5 && lzy_textW(list[k].t, fs, 600) > nodeW - 16) fs -= 0.5;
+
+                nodes.push({
+                    t: list[k].t,
+                    d: list[k].d,
+                    x: startX + c * (nodeW + gapX),
+                    y: y + labelBlock + r * (nodeH + gapY),
+                    w: nodeW,
+                    h: nodeH,
+                    fs: fs,
+                    layer: layer,
+                    bandIndex: l,
+                    index: k
+                });
+            }
+
+            y += bandH + bandGap;
+        }
+
+        y -= bandGap;
+
+        return { bands: bands, nodes: nodes, H: y + 18, hasLoop: hasLoop, loopGutter: loopGutter };
+    }
+
+    /* ===== 层背景与标签 ===== */
+    function lzy_bandMarkup(band) {
+        var layer = band.layer;
+        var out = [];
+        out.push('<g class="lzy_band">');
+        out.push('<rect x="' + band.x + '" y="' + band.y + '" width="' + band.w + '" height="' + band.h +
+            '" rx="12" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>');
+        out.push('<rect x="' + band.x + '" y="' + (band.y + 10) + '" width="3" height="' +
+            Math.max(6, band.h - 20) + '" rx="2" fill="' + lzy_rgba(layer.color, 0.75) + '"/>');
+
+        var lx = band.x + 16;
+        var ly = band.y + 21;
+        out.push('<circle cx="' + lx + '" cy="' + ly + '" r="3.5" fill="' + layer.color + '"/>');
+        out.push('<text x="' + (lx + 11) + '" y="' + ly + '" fill="#e8eefb" font-size="13" font-weight="600" dominant-baseline="central">' +
+            layer.name + '</text>');
+
+        var nameW = lzy_textW(layer.name, 13, 600);
+        out.push('<text x="' + (lx + 11 + nameW + 10) + '" y="' + (ly + 0.5) +
+            '" fill="' + lzy_rgba(layer.color, 0.75) + '" font-size="9" font-weight="600" letter-spacing="1.5" dominant-baseline="central">' +
+            layer.en + '</text>');
+
+        var idx = band.index + 1;
+        out.push('<text x="' + (band.x + band.w - 14) + '" y="' + ly +
+            '" fill="rgba(255,255,255,0.18)" font-size="10" font-weight="500" text-anchor="end" ' +
+            'font-family="ui-monospace,\'SF Mono\',Consolas,monospace" dominant-baseline="central">' +
+            'L' + (idx < 10 ? '0' : '') + idx + '</text>');
+        out.push('</g>');
+        return out.join("");
+    }
+
+    /* ===== 模块节点 ===== */
+    function lzy_nodeMarkup(node, i) {
+        var color = node.layer.color;
+        var cx = node.x + node.w / 2;
+        var cy = node.y + node.h / 2 + 0.5;
+        return '<g class="lzy_node" data-i="' + i + '" style="--lzy_c:' + color + '">' +
+            '<rect x="' + node.x + '" y="' + node.y + '" width="' + node.w + '" height="' + node.h +
+            '" rx="9" fill="' + lzy_rgba(color, 0.10) + '" stroke="' + lzy_rgba(color, 0.30) + '" stroke-width="1"/>' +
+            '<text x="' + cx + '" y="' + cy + '" fill="rgba(226,233,247,0.94)" font-size="' + node.fs.toFixed(1) +
+            '" font-weight="600" text-anchor="middle" dominant-baseline="central">' + node.t + '</text>' +
+            '</g>';
+    }
+
+    /* ===== 层间连线 ===== */
+    function lzy_connectorsMarkup(bands, W) {
+        var count = W < 560 ? 3 : 5;
+        var out = [];
+        for (var b = 0; b < bands.length - 1; b++) {
+            var upper = bands[b];
+            var lower = bands[b + 1];
+            var y1 = upper.y + upper.h;
+            var y2 = lower.y;
+
+            for (var i = 0; i < count; i++) {
+                var f = count === 1 ? 0.5 : 0.14 + (0.72 * i) / (count - 1);
+                var x = upper.x + upper.w * f;
+                out.push('<line class="lzy_flow" x1="' + x.toFixed(1) + '" y1="' + y1 + '" x2="' + x.toFixed(1) +
+                    '" y2="' + y2 + '" stroke="url(#lzy_cg' + b + ')" stroke-width="1.1"/>');
+                out.push('<path d="M' + x + ',' + y2 + ' L' + (x - 3.5) + ',' + (y2 - 6) + ' L' + (x + 3.5) + ',' + (y2 - 6) +
+                    ' Z" fill="' + lzy_rgba(lower.layer.color, 0.6) + '"/>');
+            }
+        }
+        return out.join("");
+    }
+
+    /* ===== 右侧科研反馈闭环 ===== */
+    function lzy_loopMarkup(bands, W) {
+        var last = bands[bands.length - 1];
+        var target = bands[2];
+        var x0 = last.x + last.w + 6;
+        var bx = last.x + last.w + 34;
+        var y1 = last.y + last.h / 2;
+        var y2 = target.y + target.h / 2;
+        var color = last.layer.color;
+
+        var out = [];
+        out.push('<path class="lzy_loop" d="M' + x0 + ',' + y1 + ' H' + bx + ' V' + y2 + ' H' + (x0 + 7) +
+            '" fill="none" stroke="' + lzy_rgba(color, 0.5) + '" stroke-width="1.2" stroke-linejoin="round"/>');
+        out.push('<path d="M' + x0 + ',' + y2 + ' L' + (x0 + 8) + ',' + (y2 - 4) + ' L' + (x0 + 8) + ',' + (y2 + 4) +
+            ' Z" fill="' + lzy_rgba(color, 0.75) + '"/>');
+        out.push('<text transform="translate(' + (bx + 14) + ',' + ((y1 + y2) / 2) + ') rotate(-90)" ' +
+            'fill="' + lzy_rgba(color, 0.62) + '" font-size="10" font-weight="600" letter-spacing="3" ' +
+            'text-anchor="middle" dominant-baseline="central">反馈 · 迭代优化</text>');
+        return out.join("");
+    }
+
+    /* ===== 构建整张 SVG ===== */
+    function lzy_build() {
+        var rect = lzy_svg.getBoundingClientRect();
+        var W = Math.round(rect.width);
+        if (W < 200) W = 200;
+        if (W === lzy_state.W && lzy_svg.childNodes.length) return;
+
+        var laid = lzy_layout(W);
+
+        var gradDefs = [];
+        for (var b = 0; b < laid.bands.length - 1; b++) {
+            gradDefs.push('<linearGradient id="lzy_cg' + b + '" gradientUnits="userSpaceOnUse" x1="0" y1="' +
+                (laid.bands[b].y + laid.bands[b].h) + '" x2="0" y2="' + laid.bands[b + 1].y + '">' +
+                '<stop offset="0" stop-color="' + lzy_rgba(laid.bands[b].layer.color, 0.32) + '"/>' +
+                '<stop offset="1" stop-color="' + lzy_rgba(laid.bands[b + 1].layer.color, 0.5) + '"/>' +
+                '</linearGradient>');
+        }
+
+        var body = [];
+        body.push(lzy_connectorsMarkup(laid.bands, W));
+        if (laid.hasLoop) body.push(lzy_loopMarkup(laid.bands, W));
+        for (var bi = 0; bi < laid.bands.length; bi++) {
+            body.push(lzy_bandMarkup(laid.bands[bi]));
+        }
+        for (var ni = 0; ni < laid.nodes.length; ni++) {
+            body.push(lzy_nodeMarkup(laid.nodes[ni], ni));
+        }
+
+        lzy_svg.setAttribute("viewBox", "0 0 " + W + " " + laid.H);
+        lzy_svg.setAttribute("width", W);
+        lzy_svg.setAttribute("height", laid.H);
+        lzy_svg.style.height = laid.H + "px";
+        lzy_svg.innerHTML = '<defs>' + gradDefs.join("") + '</defs>' + body.join("");
+
+        lzy_state.bands = laid.bands;
+        lzy_state.nodes = laid.nodes;
+        lzy_state.W = W;
+        lzy_state.H = laid.H;
+        lzy_state.hover = null;
+        lzy_state.pinned = null;
+
+        for (var i = 0; i < laid.nodes.length; i++) {
+            laid.nodes[i].el = lzy_svg.querySelector('.lzy_node[data-i="' + i + '"]');
+        }
+
+        lzy_updateFocus();
+    }
+
+    /* ===== 高亮与说明浮层 ===== */
+    function lzy_updateFocus() {
+        var focus = lzy_state.hover || lzy_state.pinned;
+        var list = lzy_state.nodes;
+        var i, n;
+
+        for (i = 0; i < list.length; i++) {
+            n = list[i];
+            if (!n.el) continue;
+            if (!focus) {
+                n.el.classList.remove("lzy_active");
+                n.el.style.opacity = "";
+            } else {
+                n.el.classList.toggle("lzy_active", n === focus);
+                n.el.style.opacity = n === focus ? "1" : "0.28";
+            }
+        }
+
+        if (!focus) {
+            lzy_tipBox.classList.remove("lzy_show");
+            return;
+        }
+
+        lzy_tipBox.style.borderColor = lzy_rgba(focus.layer.color, 0.55);
+        lzy_tipBox.innerHTML = '<h4 style="color:' + focus.layer.color + '">' + focus.t +
+            '</h4><p>' + focus.d + '</p>';
+
+        var sr = lzy_svg.getBoundingClientRect();
+        var stg = lzy_stage.getBoundingClientRect();
+        var cx = sr.left - stg.left + focus.x + focus.w / 2;
+        var top = sr.top - stg.top + focus.y;
+
+        lzy_tipBox.classList.add("lzy_show");
+
+        /* 顶部空间不足时，说明框改为显示在模块下方，避免被容器裁切 */
+        var tbH = lzy_tipBox.offsetHeight;
+        if (top - 12 - tbH < 0) {
+            lzy_tipBox.classList.add("lzy_below");
+            top = focus.y + focus.h;
+        } else {
+            lzy_tipBox.classList.remove("lzy_below");
+        }
+
+        lzy_tipBox.style.left = cx + "px";
+        lzy_tipBox.style.top = top + "px";
+
+        var half = lzy_tipBox.offsetWidth / 2;
+        var minLeft = 8 + half;
+        var maxLeft = stg.width - 8 - half;
+        if (maxLeft < minLeft) maxLeft = minLeft;
+        cx = Math.max(minLeft, Math.min(maxLeft, cx));
+        lzy_tipBox.style.left = cx + "px";
+    }
+
+    /* ===== 命中检测 ===== */
+    function lzy_hitTest(x, y) {
+        var list = lzy_state.nodes;
+        for (var i = list.length - 1; i >= 0; i--) {
+            var n = list[i];
+            if (x >= n.x && x <= n.x + n.w && y >= n.y && y <= n.y + n.h) return n;
+        }
+        return null;
+    }
+
+    /* ===== 交互事件 ===== */
+    lzy_svg.addEventListener("pointermove", function (e) {
+        var rect = lzy_svg.getBoundingClientRect();
+        var hit = lzy_hitTest(e.clientX - rect.left, e.clientY - rect.top);
+        if (hit !== lzy_state.hover) {
+            lzy_state.hover = hit;
+            lzy_svg.style.cursor = hit ? "pointer" : "default";
+            lzy_updateFocus();
+        }
+    });
+
+    lzy_svg.addEventListener("pointerleave", function () {
+        lzy_state.hover = null;
+        lzy_svg.style.cursor = "default";
+        lzy_updateFocus();
+    });
+
+    lzy_svg.addEventListener("pointerdown", function (e) {
+        var rect = lzy_svg.getBoundingClientRect();
+        var hit = lzy_hitTest(e.clientX - rect.left, e.clientY - rect.top);
+        lzy_state.pinned = (hit && hit !== lzy_state.pinned) ? hit : null;
+        lzy_updateFocus();
+    });
+
+    var lzy_resizeTimer = 0;
+    function lzy_queueResize() {
+        clearTimeout(lzy_resizeTimer);
+        lzy_resizeTimer = setTimeout(lzy_build, 120);
+    }
+
+    window.addEventListener("resize", lzy_queueResize);
+    if (window.ResizeObserver) {
+        new ResizeObserver(lzy_queueResize).observe(lzy_stage);
+    }
+
+    /* ===== 启动 ===== */
+    lzy_build();
+})();
+</script>
+</body>
+</html>
